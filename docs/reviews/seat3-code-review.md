@@ -4,7 +4,8 @@ Date: 2026-09-12
 Scope: commit `0c1e219` (duplicate-create guard in `applyDiff`) and the Seat 3
 files around it: `apps/web/lib/store.ts`, `apps/web/app/api/*`, plus
 `apps/bot/src/index.ts` where it interacts with them.
-Status: **findings only, nothing fixed yet.**
+Status: **#1 and #5 fixed** in the follow-up commit on this branch (quote-based
+repeat check in `applyDiff`, zod validation on `/api/ingest`). The rest are open.
 
 ## TL;DR
 
