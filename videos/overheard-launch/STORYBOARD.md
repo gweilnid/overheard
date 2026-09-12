@@ -1,6 +1,6 @@
 ---
 format: 1920x1080
-duration: 60s
+duration: 65s
 message: "You never log anything — the board fills itself from what the team already said"
 arc: Hook → The group → The mark → The board → Ask it → Your own list → The point → Brand
 audience: hackathon judges and the team
@@ -221,15 +221,15 @@ Scene 6 (8.6–10.0s): held. Caret blinks in the empty input; the board sits cha
 
 ## Frame 6 — Your own list
 
-- scene: A private DM to the bot; /me returns everything you owe, in your own words, and one tap closes it
-- duration: 10s
+- scene: A private DM to the bot; /me returns everything you owe, and the tap that closes one flies out of Telegram and lands on the board
+- duration: 15s
 - poster: 7s
 - transition_in: cut
 - status: outline
 - blueprint: prompt-type-submit-generate (Adapt)
 - focal: the bot's digest message
-- roles: recreated Telegram DM = cutout · ground = background
-- asset_candidates: none
+- roles: recreated Telegram DM = cutout · screenshots/scroll-000.png = cutout (the board the tap lands on, held at 1:1) · ground = background
+- asset_candidates: screenshots/scroll-000.png
 - src: compositions/frames/06-me.html
 
 The board answers the room. This answers you. The same agent that stayed silent in
@@ -258,8 +258,20 @@ Scene 4 (5.2–6.6s): the inline keyboard appears under the message — five sta
 Scene 5 (6.6–8.4s): a press lands on **`Done: 1`**; the button depresses, a **`Done ✍️`**
 toast slides in at the top, and the message **edits in place** — the header re-reads
 **"You're on the hook for 4 things:"** and item 1 leaves, the rest renumbering up.
-Scene 6 (8.4–10.0s): held. The edited message sits still; only the composer caret
-blinks.
+Scene 6 (8.4s): the edit settles.
+Scene 7 (8.4–9.7s): the tap **leaves Telegram as a paper plane** — it lifts off the
+message, banks right and climbs, while the DM panel recedes and the board it writes
+to comes forward behind it. The plane is the only thing carrying continuity across
+the two surfaces, so it must never be lost behind either.
+Scene 8 (9.7–11.6s): the plane sweeps left across the full board, turning as it goes.
+The board is the real captured plate at 1:1, already showing the state Frame 5 left
+it in — 34 outstanding, not 35.
+Scene 9 (11.6–13.4s): it dives onto **"write the 90 second script"** in the Yasin
+column — the card the DM just closed — and is absorbed into it. The strike draws
+through the title, the card greys, and the counts fall: the column to 4 outstanding,
+the headline figure to 33. This is the same write the sidebar made in Frame 5, only
+made from a phone, from inside a chat.
+Scene 10 (13.4–15.0s): held on the changed board. Nothing moves.
 
 ## Frame 7 — The point
 
