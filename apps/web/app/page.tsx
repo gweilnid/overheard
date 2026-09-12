@@ -1,6 +1,6 @@
 'use client'
 // SEAT 4 owns this file.
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useCopilotReadable, useCopilotAction } from '@copilotkit/react-core'
 import type { Commitment, Person } from '@overheard/types'
 
@@ -22,16 +22,72 @@ function initials(name: string) {
   return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
 
+// Fixed row units, so every tile lands on the same baseline and the grid reads
+// as a grid. Width still encodes volume; height never does.
+const SHOWN = 4
+const spanFor = (n: number) => (n >= 9 ? 'span 2' : 'span 1')
+
+// Outstanding first, newest first within that — a freshly overheard promise
+// appears at the top of its tile rather than below the fold.
+const order = (list: Commitment[]) =>
+  [...list].reverse().sort((a, b) =>
+    a.status === b.status ? 0 : a.status === 'open' ? -1 : 1)
+
+const Tile = ({
+  label, count, unit, span, accent, items,
+}: {
+  label: string; count: number; unit: string; span: string
+  accent?: boolean; items: Commitment[]
+}) => {
+  const shown = order(items).slice(0, SHOWN)
+  const rest = items.length - shown.length
+  return (
+    <section className="tile" style={{ gridColumn: span }}>
+      <header className="tilehead">
+        <h2 className={accent ? 'accent' : undefined}>{label}</h2>
+        <span className="n">{count} {unit}</span>
+      </header>
+      <div className="rows">
+        {shown.map(c => (
+          <article className={c.status === 'done' ? 'row done' : 'row'} key={c.id}>
+            <p className="what">{c.what}</p>
+            <div className="tags">
+              {c.kind === 'meeting' && c.when && <span className="tag hot">{c.when}</span>}
+              {c.kind !== 'meeting' && c.due && <span className="tag hot">{c.due}</span>}
+              {c.toWhom && <span className="tag">→ {c.toWhom}</span>}
+              {c.status === 'done' && <span className="tag muted">settled</span>}
+            </div>
+            <p className="said">{c.quote}</p>
+          </article>
+        ))}
+      </div>
+      {rest > 0 && <footer className="more">+{rest} more</footer>}
+    </section>
+  )
+}
+
 export default function Board() {
   const [commitments, setCommitments] = useState<Commitment[]>([])
   const [people, setPeople] = useState<Person[]>([])
   const [live, setLive] = useState(false)
 
-  const load = useCallback(() =>
-    fetch('/api/commitments')
-      .then(r => r.json())
-      .then(d => { setCommitments(d.commitments); setPeople(d.people); setLive(true) })
-      .catch(() => setLive(false)), [])
+  // The poll used to call setState every 2s with freshly-parsed objects, so the
+  // board re-rendered (and every CopilotKit readable re-serialised) whether or not
+  // anything had been said. Compare the raw payload and do nothing when it matches.
+  const seen = useRef('')
+  const load = useCallback(async () => {
+    try {
+      const body = await (await fetch('/api/commitments')).text()
+      setLive(true)
+      if (body === seen.current) return
+      seen.current = body
+      const d = JSON.parse(body)
+      setCommitments(d.commitments)
+      setPeople(d.people)
+    } catch {
+      setLive(false)
+    }
+  }, [])
 
   useEffect(() => {
     load()
@@ -118,50 +174,6 @@ export default function Board() {
   const orphans = promises.filter(c => !people.some(p => p.id === c.ownerId))
   const withCommitments = people.filter(p => promises.some(c => c.ownerId === p.id))
   const anything = meetings.length || promises.length
-
-  // Fixed row units, so every tile lands on the same baseline and the grid reads
-  // as a grid. Width still encodes volume; height never does.
-  const SHOWN = 4
-  const spanFor = (n: number) => (n >= 9 ? 'span 2' : 'span 1')
-
-  // Outstanding first, newest first within that — a freshly overheard promise
-  // appears at the top of its tile rather than below the fold.
-  const order = (list: Commitment[]) =>
-    [...list].reverse().sort((a, b) =>
-      a.status === b.status ? 0 : a.status === 'open' ? -1 : 1)
-
-  const Tile = ({
-    label, count, unit, span, accent, items,
-  }: {
-    label: string; count: number; unit: string; span: string
-    accent?: boolean; items: Commitment[]
-  }) => {
-    const shown = order(items).slice(0, SHOWN)
-    const rest = items.length - shown.length
-    return (
-      <section className="tile" style={{ gridColumn: span }}>
-        <header className="tilehead">
-          <h2 className={accent ? 'accent' : undefined}>{label}</h2>
-          <span className="n">{count} {unit}</span>
-        </header>
-        <div className="rows">
-          {shown.map(c => (
-            <article className={c.status === 'done' ? 'row done' : 'row'} key={c.id}>
-              <p className="what">{c.what}</p>
-              <div className="tags">
-                {c.kind === 'meeting' && c.when && <span className="tag hot">{c.when}</span>}
-                {c.kind !== 'meeting' && c.due && <span className="tag hot">{c.due}</span>}
-                {c.toWhom && <span className="tag">→ {c.toWhom}</span>}
-                {c.status === 'done' && <span className="tag muted">settled</span>}
-              </div>
-              <p className="said">{c.quote}</p>
-            </article>
-          ))}
-        </div>
-        {rest > 0 && <footer className="more">+{rest} more</footer>}
-      </section>
-    )
-  }
 
   return (
     <main>
