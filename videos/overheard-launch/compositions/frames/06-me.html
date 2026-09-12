@@ -369,14 +369,27 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 62px;
-      height: 62px;
+      width: 104px;
+      height: 104px;
+      filter: drop-shadow(0 8px 22px rgba(245, 64, 29, 0.38));
       will-change: transform, opacity;
     }
     #me-plane svg {
       display: block;
-      width: 62px;
-      height: 62px;
+      width: 104px;
+      height: 104px;
+    }
+    /* the trail — it is what makes the flight read as motion rather than a glyph */
+    #me-trail {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 190px;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, rgba(245, 64, 29, 0) 0%, rgba(245, 64, 29, 0.5) 100%);
+      transform-origin: 100% 50%;
+      will-change: transform, opacity;
     }
 
     /* composer */
@@ -574,14 +587,15 @@
         </div>
       </div>
 
+      <div id="me-trail"></div>
       <div id="me-plane">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
             d="M3.4 11.4 20 4.6l-6.8 16.6-2.3-7.5-7.5-2.3z"
-            stroke="#F5401D"
-            stroke-width="1.7"
+            fill="#F5401D"
+            stroke="#FFFFFF"
+            stroke-width="1.1"
             stroke-linejoin="round"
-            fill="#FFFFFF"
           />
         </svg>
       </div>
@@ -610,6 +624,7 @@
       var veil = $("me-veil");
       var strike = $("me-strike");
       var plane = $("me-plane");
+      var trail = $("me-trail");
       var bigA = document.querySelectorAll("#me-bigcount .bc-a, #me-colcount .bc-a");
       var bigB = document.querySelectorAll("#me-bigcount .bc-b, #me-colcount .bc-b");
       var patches = document.querySelectorAll("#root .me-patch");
@@ -653,8 +668,10 @@
       gsap.set(bigB, { opacity: 0 });
       gsap.set(veil, { opacity: 0 });
       gsap.set(strike, { scaleX: 0 });
-      gsap.set(plane, { opacity: 0, x: 900, y: 690, scale: 0.55, rotation: -18,
+      gsap.set(plane, { opacity: 0, x: 908, y: 668, scale: 0.85, rotation: -18,
                         transformOrigin: "50% 50%" });
+      gsap.set(trail, { opacity: 0, x: 908, y: 717, scale: 0.4, rotation: -18,
+                        transformOrigin: "100% 50%" });
 
       // ── Scene 1 (0.0–1.6s) — the private chat settles ──────────────────────
       tl.to(panel, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.06);
@@ -712,8 +729,11 @@
 
       // ── Scene 7 (8.4–9.7s) — the tap leaves Telegram as a paper plane ─────
       tl.to(plane, { opacity: 1, duration: 0.18, ease: "none" }, 8.42);
+      tl.to(trail, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" }, 8.46);
       tl.to(plane, { x: 1520, duration: 1.3, ease: "power1.in" }, 8.42);
+      tl.to(trail, { x: 1528, duration: 1.3, ease: "power1.in" }, 8.42);
       tl.to(plane, { y: 330, duration: 1.3, ease: "power2.out" }, 8.42);
+      tl.to(trail, { y: 379, rotation: -34, duration: 1.3, ease: "power2.out" }, 8.42);
       tl.to(plane, { scale: 1, rotation: -34, duration: 1.3, ease: "power2.out" }, 8.42);
 
       // the DM recedes; the board it writes to comes forward
@@ -723,14 +743,19 @@
 
       // ── Scene 8 (9.7–11.6s) — it sweeps across the board ─────────────────
       tl.to(plane, { x: 660, duration: 1.9, ease: "power1.inOut" }, 9.72);
+      tl.to(trail, { x: 668, duration: 1.9, ease: "power1.inOut" }, 9.72);
       tl.to(plane, { y: 276, duration: 1.9, ease: "power2.inOut" }, 9.72);
+      tl.to(trail, { y: 325, rotation: 168, duration: 1.9, ease: "power2.inOut" }, 9.72);
       tl.to(plane, { rotation: 168, duration: 1.9, ease: "power1.inOut" }, 9.72);
 
       // ── Scene 9 (11.6–13.4s) — it dives onto the card and the card closes ─
       tl.to(plane, { x: 128, duration: 1.5, ease: "power2.in" }, 11.62);
+      tl.to(trail, { x: 136, duration: 1.5, ease: "power2.in" }, 11.62);
       tl.to(plane, { y: 560, duration: 1.5, ease: "power2.in" }, 11.62);
-      tl.to(plane, { rotation: 212, scale: 0.5, duration: 1.5, ease: "power2.in" }, 11.62);
+      tl.to(trail, { y: 609, rotation: 212, scale: 0.45, duration: 1.5, ease: "power2.in" }, 11.62);
+      tl.to(plane, { rotation: 212, scale: 0.6, duration: 1.5, ease: "power2.in" }, 11.62);
       tl.to(plane, { opacity: 0, duration: 0.22, ease: "power2.out" }, 13.02);
+      tl.to(trail, { opacity: 0, duration: 0.2, ease: "power2.out" }, 12.9);
 
       tl.to(strike, { scaleX: 1, duration: 0.44, ease: "power3.out" }, 13.06);
       tl.to(veil, { opacity: 1, duration: 0.5, ease: "power2.out" }, 13.12);
