@@ -38,16 +38,26 @@ export function addMessage(m: IngestMessage) {
   }
 }
 
+// True if an existing card (open or done) already came from this exact message:
+// a closed card is no longer sent as `open`, so the model would recreate it.
+// Message id alone is not enough — the seed fixture's cards (71, 88, 103) would
+// block real messages with the same ids. A card's verbatim quote sits in its
+// source message's text, so that pins down the message.
+function isRepeat(c: Diff['create'][number], existing: Commitment[]): boolean {
+  const source = store.messages.find(m => m.messageId === c.sourceMessageId && m.text.includes(c.quote))
+  if (!source) return false
+  return existing.some(e => e.sourceMessageId === c.sourceMessageId && source.text.includes(e.quote))
+}
+
 export function applyDiff(diff: Diff): number[] {
   const reactTo: number[] = []
-  // Includes done commitments: a closed one is no longer sent as `open`, but its
-  // source message is still in the window, so the model would recreate the card.
-  const known = new Set(store.commitments.map(c => c.sourceMessageId))
+  // Snapshot, so two promises in one new message (same diff) are both kept.
+  const existing = [...store.commitments]
 
   for (const c of diff.create) {
     // A quiet agent that sometimes stays silent beats a chatty one that is wrong.
     if (c.confidence < CONFIDENCE_THRESHOLD) continue
-    if (known.has(c.sourceMessageId)) continue
+    if (isRepeat(c, existing)) continue
     store.commitments.push({ ...c, id: crypto.randomUUID(), status: 'open' })
     reactTo.push(c.sourceMessageId)
   }
