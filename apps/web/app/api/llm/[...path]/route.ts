@@ -9,7 +9,7 @@
 import { NextResponse } from 'next/server'
 
 const UPSTREAM = 'https://openrouter.ai/api/v1'
-const MAX_OUTPUT = 1500
+const MAX_OUTPUT = 6000
 
 export async function POST(req: Request, ctx: { params: Promise<{ path: string[] }> }) {
   const { path } = await ctx.params

@@ -23,20 +23,24 @@ if (!people.length) {
 console.log('People the bot has seen:')
 for (const p of people) console.log(`  ${p.id}  ${p.name}`)
 
-const path = join(root, 'fixtures/demo.json')
-let raw = readFileSync(path, 'utf8')
 let filled = 0
+const left = new Set<string>()
 
-for (const p of people) {
-  const first = p.name.split(/\s+/)[0].toUpperCase()
-  const token = `TODO-${first}`
-  if (raw.includes(token)) {
-    raw = raw.replaceAll(`"${token}"`, `"${p.id}"`)
-    console.log(`  -> ${token} = ${p.id} (${p.name})`)
-    filled++
+for (const file of ['fixtures/demo.json', 'fixtures/board.json']) {
+  const path = join(root, file)
+  let raw = readFileSync(path, 'utf8')
+
+  for (const p of people) {
+    const token = `TODO-${p.name.split(/\s+/)[0].toUpperCase()}`
+    if (raw.includes(token)) {
+      raw = raw.replaceAll(`"${token}"`, `"${p.id}"`)
+      console.log(`  -> ${file}: ${token} = ${p.id} (${p.name})`)
+      filled++
+    }
   }
+
+  writeFileSync(path, raw)
+  for (const m of raw.matchAll(/TODO-[A-Z]+/g)) left.add(m[0])
 }
 
-writeFileSync(path, raw)
-const left = [...raw.matchAll(/TODO-[A-Z]+/g)].map(m => m[0])
-console.log(`\nfilled ${filled}; still missing: ${left.length ? [...new Set(left)].join(', ') : 'none'}`)
+console.log(`\nfilled ${filled}; still missing: ${left.size ? [...left].join(', ') : 'none'}`)

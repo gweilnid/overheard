@@ -41,6 +41,23 @@ export default function Board() {
     value: people,
   })
 
+  // Counting 50+ cards by hand is exactly what a model gets wrong — it answered
+  // "Mehmet Cem: 5 open" when the board said 6. Hand it the arithmetic already done.
+  useCopilotReadable({
+    description:
+      'Precomputed totals. Use these numbers when asked how many or who has most — ' +
+      'do not recount the list yourself.',
+    value: {
+      totalOpen: commitments.filter(c => c.status === 'open').length,
+      totalDone: commitments.filter(c => c.status === 'done').length,
+      openPerPerson: people.map(p => ({
+        name: p.name,
+        open: commitments.filter(c => c.ownerId === p.id && c.status === 'open').length,
+      })),
+      openMeetings: commitments.filter(c => c.kind === 'meeting' && c.status === 'open').length,
+    },
+  })
+
   useCopilotAction({
     name: 'closeCommitment',
     description: 'Mark a commitment or meeting as done, by its id.',
