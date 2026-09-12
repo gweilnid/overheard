@@ -14,13 +14,20 @@ messages where someone made a promise. A board on the projector fills itself wit
 those commitments, live. Then someone DMs the bot `/me`, gets their personal list,
 taps **Done**, and the board changes in front of the audience.
 
+Next to the board sits a CopilotKit chat that can see the whole group state, so
+you can ask it the questions you cannot ask in Telegram — *"what is Ondra on the
+hook for?"* — and close or reassign things from the chat.
+
 That is the whole product. Everything else is cut.
+
+**Everything in this project is in English** — code, comments, commit messages,
+the prompt, the fixture, the demo conversation, the UI. No exceptions.
 
 ## Cut, deliberately
 
-Supabase / any database · CopilotKit · realtime subscriptions · identity &
-nickname resolution · `events` table · timeline view · deploy · auth · deadline
-nudges · `/start` onboarding deep links.
+Supabase / any database · realtime subscriptions · identity & nickname
+resolution · `events` table · timeline view · deploy · auth · deadline nudges ·
+`/start` onboarding deep links.
 
 **There is no database.** State lives in memory in the Next.js process. One demo, one
 group, one laptop. A DB costs 30 minutes and buys durability we will never need.
@@ -177,8 +184,8 @@ Unblocked at T+0:20. Build against a hardcoded JSON array until Seat 3 lands.
 - [ ] Done cards visibly struck through, not removed — the audience must see the change
 - [ ] Big text. It is going on a projector, viewed from four metres away.
 
-### Seat 5 — Setup + demo (starts at T+0:00, no code)
-This seat decides whether we have a demo at all.
+### Seat 5 — Setup, then CopilotKit (starts at T+0:00)
+First 20 minutes decide whether we have a demo at all. Then you build the sidebar.
 - [ ] BotFather: create bot, **`/setprivacy` → Disable** (without this the bot sees
       nothing in the group), grab the token
 - [ ] Create the group, add the bot, make it admin
@@ -188,6 +195,32 @@ This seat decides whether we have a demo at all.
 - [ ] Rehearse it twice out loud with whoever is on stage
 - [ ] **Record a screen-capture fallback video once it works.** Insurance.
 
+Then, from ~T+0:45 once Seat 4's board holds state:
+- [ ] `app/api/copilotkit/route.ts` — `CopilotRuntime` + `AnthropicAdapter`, same
+      `ANTHROPIC_API_KEY` as the extractor, no second key
+- [ ] `<CopilotKit runtimeUrl="/api/copilotkit">` provider in `app/layout.tsx`
+      (the TODO marker is already there) + `<CopilotSidebar>`
+- [ ] `useCopilotReadable({ description: 'All commitments in the group, who owes
+      what to whom', value: commitments })` — five lines, the state already exists
+- [ ] `useCopilotAction` for `closeCommitment` → `POST /api/close`
+
+**Read this before you write a line of CopilotKit code.** There are two
+generations of the API live at once and the docs mix them:
+
+| | v1 | v2 |
+|---|---|---|
+| state | `useCopilotReadable` | `useAgentContext` |
+| actions | `useCopilotAction` | `useFrontendTool` (Zod params) |
+| runtime | `CopilotRuntime` + `AnthropicAdapter` | `createCopilotRuntimeHandler` + `BuiltInAgent` |
+
+Paste a v1 snippet into a v2 install and you get "hook is not exported" and lose
+half an hour. **Install, open `node_modules/@copilotkit/react-core`, look at what
+is actually exported, then write code.** Use v1 — `AnthropicAdapter` runs on the
+key we already have.
+
+The sidebar is the first thing cut at T+1:40 if the gate is at risk. Seat 4's
+board is the demo; this is the second wow, not the first.
+
 ---
 
 ## Timeline
@@ -195,21 +228,38 @@ This seat decides whether we have a demo at all.
 | Time | What |
 |---|---|
 | **T+0:00–0:20** | Seat 5 on BotFather. One person lands the skeleton + `packages/types` + stub endpoints returning fake data. Everyone else: `npm install`, keys. |
-| **T+0:20–1:20** | Four seats build in parallel against fake data. Nobody touches anyone else's files. |
+| **T+0:20–1:20** | Four seats build in parallel against fake data. Nobody touches anyone else's files. Seat 5 starts CopilotKit at ~T+0:45. |
 | **T+1:20–1:40** | Integration. **HARD GATE: one real Telegram message produces one real card on the board by T+1:40.** |
-| **T+1:40–2:10** | `/me` DM + Done button — *only if the gate passed*. If it did not, this block goes to fixing the gate and we demo the board alone. |
+| **T+1:40–2:10** | `/me` DM + Done button, and finish the sidebar — *only if the gate passed*. If it did not, both get cut and we demo the board alone. |
 | **T+2:10–2:30** | Rehearse twice. Record the fallback. |
 
-## Env
+## Getting started
 
-```
-# apps/bot/.env
-TELEGRAM_BOT_TOKEN=
-WEB_URL=http://localhost:3000
+The skeleton is already on `main` and it builds. Clone, then:
 
-# apps/web/.env.local
-ANTHROPIC_API_KEY=
+```bash
+npm install                 # workspace root, installs everything
+
+cp apps/web/.env.example apps/web/.env.local     # add ANTHROPIC_API_KEY
+cp apps/bot/.env.example apps/bot/.env           # add TELEGRAM_BOT_TOKEN
+
+npm run web                 # Next.js on :3000 — board + API
+npm run bot                 # grammY long polling
 ```
+
+`GET /api/commitments` already returns realistic fake data, so **Seat 4 can build
+the board right now** without waiting for anyone.
+
+Every file you own has a `TODO SEAT n` marker in it saying what to replace.
+
+| File | Seat |
+|---|---|
+| `packages/types/index.ts` | frozen contract — nobody edits after T+0:20 |
+| `apps/bot/src/index.ts` | 1 |
+| `apps/web/lib/extract.ts`, `apps/web/fixtures/demo.json` | 2 |
+| `apps/web/lib/store.ts`, `apps/web/app/api/*` | 3 |
+| `apps/web/app/page.tsx` | 4 |
+| `apps/web/app/layout.tsx`, `app/api/copilotkit/` | 5 |
 
 ## Rules for the next 2.5 hours
 
@@ -218,3 +268,5 @@ ANTHROPIC_API_KEY=
    blast radius is one demo.
 3. **If you are blocked for more than 5 minutes, say so out loud.** Do not debug alone.
 4. **At T+1:40 we ship what works.** Anything unfinished gets cut, not rescued.
+5. **Everything in English.** Code, comments, commits, prompt, fixture, demo
+   conversation, UI.

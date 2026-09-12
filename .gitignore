@@ -4,3 +4,4 @@ node_modules/
 .env.local
 .DS_Store
 dist/
+package-lock.json

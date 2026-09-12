@@ -1,0 +1,27 @@
+{
+  "_comment": "SEAT 2 + SEAT 5 own this. Doubles as the eval input and the demo script.",
+  "roster": [
+    { "id": "1", "name": "Petr" },
+    { "id": "2", "name": "Jana" },
+    { "id": "3", "name": "Ondra" }
+  ],
+  "messages": [
+    { "messageId": 101, "chatId": -1, "userId": "1", "name": "Petr", "ts": 0, "text": "ok so the pricing deck for Thursday, where are we" },
+    { "messageId": 102, "chatId": -1, "userId": "2", "name": "Jana", "ts": 1, "text": "still waiting on numbers from Ondra" },
+    { "messageId": 103, "chatId": -1, "userId": "3", "name": "Ondra", "ts": 2, "text": "yeah I'll send them over tomorrow morning" },
+    { "messageId": 104, "chatId": -1, "userId": "1", "name": "Petr", "ts": 3, "text": "we should probably look at the onboarding flow at some point too" },
+    { "messageId": 105, "chatId": -1, "userId": "2", "name": "Jana", "ts": 4, "text": "one thing at a time" }
+  ],
+  "expected": [
+    {
+      "ownerName": "Ondra",
+      "what": "send the pricing numbers to Jana",
+      "due": "tomorrow morning",
+      "sourceMessageId": 103,
+      "note": "The WHAT comes from message 102, not 103. This is why we send a window, not one message."
+    },
+    {
+      "note": "Message 104 must produce NOTHING. 'we should probably at some point' is not a commitment."
+    }
+  ]
+}
