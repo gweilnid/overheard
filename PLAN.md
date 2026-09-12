@@ -9,7 +9,7 @@ The spec in `docs/superpowers/specs/` stays as the vision. This is the cut-down.
 
 ## What we are building
 
-A Telegram group conversation happens. The bot says **nothing**. A ✅ appears on the
+A Telegram group conversation happens. The bot says **nothing**. A ✍️ appears on the
 messages where someone made a promise. A board on the projector fills itself with
 those commitments, live. Then someone DMs the bot `/me`, gets their personal list,
 taps **Done**, and the board changes in front of the audience.
@@ -43,7 +43,7 @@ apps/bot  (grammY, long polling)
    |
    |  POST  {WEB_URL}/api/ingest   { messageId, chatId, userId, name, text, ts }
    |  <---  { reactTo: number[] }
-   v  bot applies ✅ via setMessageReaction
+   v  bot applies ✍️ via setMessageReaction
 apps/web  (Next.js)
    |- lib/store.ts        globalThis singleton: messages[], people[], commitments[]
    |- lib/extract.ts      debounce 2s -> LLM -> Diff -> apply to store
@@ -189,7 +189,7 @@ then it moves to the demo laptop. Two at once and one of you silently stops
 receiving messages with a 409.
 - [ ] grammY long polling (`bot.start()`), **not** webhooks
 - [ ] `bot.on('message:text')` → build `IngestMessage` → `POST {WEB_URL}/api/ingest`
-- [ ] For each id in the `reactTo` response: `ctx.api.setMessageReaction(chatId, id, [{type:'emoji', emoji:'✅'}])`
+- [ ] For each id in the `reactTo` response: `ctx.api.setMessageReaction(chatId, id, [{type:'emoji', emoji:'✍️'}])`
 - [ ] Never call `ctx.reply()` in the group. Ever. That is the product.
 - [ ] **Stretch, after the T+1:40 gate:** `/me` in a private chat → that person's open
       commitments as text + one inline button per item → callback handler → `POST /api/close`
@@ -224,8 +224,9 @@ First 20 minutes decide whether we have a demo at all. Then you build the sideba
 - [ ] BotFather: create bot, **`/setprivacy` → Disable** (without this the bot sees
       nothing in the group), grab the token
 - [ ] Create the group, add the bot, make it admin
-- [ ] **Verify a ✅ reaction actually posts** — non-premium bots are limited to an
-      allowed emoji set. Confirm in the first 20 minutes, not at T+2:00.
+- [x] ~~Verify the reaction posts~~ — **done, and ✅ does not exist as a Telegram
+      reaction.** `✅`, `☑️` and `✔️` all return `REACTION_INVALID`. We mark with
+      **✍️**; `🫡 👀 👍 👌 🤝 💯 🤔 🎉` also work if you want to change it.
 - [ ] Write the ~25-line English demo conversation with Seat 2 (same file as the fixture)
 - [ ] Rehearse it twice out loud with whoever is on stage
 - [ ] **Record a screen-capture fallback video once it works.** Insurance.

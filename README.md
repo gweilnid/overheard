@@ -17,14 +17,14 @@ Where the two disagree, `PLAN.md` wins.
 
 1. `/setprivacy` → **Disable** for the bot in BotFather — otherwise it sees nothing
    in the group.
-2. Verify a ✅ reaction actually posts from the bot. Non-premium bots are limited to
-   an allowed emoji set; find out now, not at T+2:00.
+2. ~~Verify the reaction posts.~~ Done — **✅ is not a valid Telegram reaction**
+   (`REACTION_INVALID`, along with ☑️ and ✔️). The bot marks with **✍️**.
 
 ## Seats
 
 | # | Owner | Scope |
 |---|---|---|
-| 1 | | Bot — grammY long polling, forward to `/api/ingest`, apply ✅ |
+| 1 | | Bot — grammY long polling, forward to `/api/ingest`, apply ✍️ |
 | 2 | | Extractor — prompt, diff logic, fixture + `npm run eval` |
 | 3 | | Store + API — in-memory store, debounce, ingest/commitments/close |
 | 4 | | Board — Next.js, polls every 2s, cards grouped by person |
