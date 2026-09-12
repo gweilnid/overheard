@@ -18,6 +18,14 @@ function dueBucket(due: string | null): 'today' | 'tomorrow' | 'this week' | 'la
   return 'later'
 }
 
+// A stable hue per person, so at four metres you find your own column by colour
+// before you have read the name.
+function personHue(id: string): string {
+  let h = 0
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) % 360
+  return `hsl(${h} 62% 68%)`
+}
+
 function initials(name: string) {
   return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
@@ -122,48 +130,87 @@ export default function Board() {
   return (
     <main>
       <style>{`
-        :root { color-scheme: dark; }
-        main { padding: 40px 48px 64px; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
-        .top { display:flex; align-items:baseline; gap:20px; margin-bottom:8px; }
-        h1 { font-size:44px; letter-spacing:-.02em; margin:0; font-weight:650; }
-        .sub { font-size:19px; color:#7c7c86; margin:0 0 36px; }
-        .dot { width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:8px;
-               background:#39d98a; box-shadow:0 0 0 4px rgba(57,217,138,.15); }
-        .dot.off { background:#5a5a63; box-shadow:none; }
-        .count { font-size:19px; color:#a0a0aa; }
-        .cols { display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; }
-        .col { flex:1 1 340px; min-width:320px; max-width:460px; }
-        .who { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-        .av { width:38px; height:38px; border-radius:50%; background:#26262c; color:#c8c8d2;
-              display:grid; place-items:center; font-size:15px; font-weight:600; letter-spacing:.02em; }
-        .who h2 { font-size:22px; margin:0; font-weight:600; }
-        .who .n { font-size:15px; color:#6f6f79; }
-        .card { background:#17171b; border:1px solid #232329; border-radius:14px;
-                padding:18px 20px; margin-bottom:14px; transition:opacity .25s; }
-        .card.done { opacity:.4; }
-        .what { font-size:22px; line-height:1.3; font-weight:550; }
-        .card.done .what { text-decoration:line-through; }
-        .meta { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
-        .pill { font-size:14px; padding:4px 11px; border-radius:999px; background:#26262c; color:#b4b4c0; }
-        .pill.due { background:#2a2418; color:#e0b661; }
-        .pill.ok  { background:#18251d; color:#5fbf8a; }
-        .pill.when{ background:#1b2430; color:#74aee0; }
-        .av.meet  { background:#1b2430; color:#74aee0; font-size:19px; }
-        .card.meet{ border-color:#24303d; }
-        .quote { margin-top:14px; padding-left:13px; border-left:2px solid #2e2e36;
-                 font-size:16px; line-height:1.45; color:#83838f; font-style:italic; }
-        .empty { color:#5a5a63; font-size:20px; margin-top:40px; line-height:1.6; }
-        .empty code { background:#17171b; padding:3px 8px; border-radius:6px; font-size:17px; }
+        :root {
+          color-scheme: dark;
+          --ground:#0b0b0d; --surface:#141417; --line:#242429;
+          --ink:#f4f3f1; --soft:#9a98a2; --faint:#6b6974;
+          --amber:#e8b757; --amber-bg:#2a2317;
+          --blue:#7fb3e8;  --blue-bg:#16212e;
+          --green:#62c48e; --green-bg:#152219;
+        }
+        main { padding:38px 44px 80px; font-family:Archivo,ui-sans-serif,system-ui,sans-serif; }
+
+        /* The Copilot launcher floats over the top-right corner; keep the tally clear of it. */
+        .top { display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
+               flex-wrap:wrap; padding-right:86px; }
+        h1 { font-size:46px; font-weight:700; letter-spacing:-.03em; margin:0; line-height:1; }
+        .sub { color:var(--faint); margin:10px 0 0; font-size:18px; font-weight:500; }
+        .tally { display:flex; gap:30px; align-items:baseline; }
+        .stat { text-align:right; }
+        .stat b { display:block; font-size:38px; font-weight:700; letter-spacing:-.02em;
+                  font-variant-numeric:tabular-nums; line-height:1; }
+        .stat span { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:11px;
+                     letter-spacing:.16em; text-transform:uppercase; color:var(--faint); }
+        .stat.live b { color:var(--amber); }
+        .dot { width:8px; height:8px; border-radius:50%; background:var(--green); display:inline-block;
+               margin-right:7px; vertical-align:middle; box-shadow:0 0 0 4px rgba(98,196,142,.16); }
+        .dot.off { background:#4a4852; box-shadow:none; }
+
+        hr.rule { border:0; border-top:1px solid var(--line); margin:30px 0 34px; }
+
+        .cols { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:34px 30px; align-items:start; }
+        .who { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+        .av { width:36px; height:36px; border-radius:50%; display:grid; place-items:center;
+              font-size:13px; font-weight:700; letter-spacing:.03em; flex:none;
+              background:var(--surface); border:1.5px solid currentColor; }
+        .who h2 { font-size:21px; font-weight:600; margin:0; letter-spacing:-.01em; color:var(--ink); }
+        .who .n { font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.13em;
+                  text-transform:uppercase; color:var(--faint); margin-top:3px; }
+
+        .card { padding:17px 19px 18px; border-radius:12px; background:var(--surface);
+                border:1px solid var(--line); margin-bottom:12px; }
+        .card.meet { border-color:#223244; background:linear-gradient(var(--blue-bg),var(--surface) 72%); }
+        .card.done { background:transparent; border-style:dashed; }
+        .card.done .what { color:var(--faint); text-decoration:line-through; text-decoration-thickness:1.5px; }
+        .card.done .quote { opacity:.45; }
+
+        .what { font-size:23px; font-weight:600; line-height:1.22; letter-spacing:-.015em; }
+        .meta { display:flex; gap:7px; margin-top:11px; flex-wrap:wrap; }
+        .pill { font-family:"JetBrains Mono",monospace; font-size:11.5px; letter-spacing:.04em;
+                padding:4px 9px; border-radius:6px; background:#1e1e23; color:var(--soft); }
+        .pill.due  { background:var(--amber-bg); color:var(--amber); }
+        .pill.when { background:var(--blue-bg);  color:var(--blue); }
+        .pill.ok   { background:var(--green-bg); color:var(--green); }
+
+        .quote { font-family:Newsreader,Georgia,serif; font-style:italic; font-size:18px;
+                 line-height:1.4; color:var(--soft); margin-top:13px; padding-left:14px;
+                 border-left:2px solid var(--line); }
+
+        .empty { color:var(--faint); font-size:21px; line-height:1.65; margin-top:46px; font-weight:500; }
+        .empty code { font-family:"JetBrains Mono",monospace; font-size:17px; color:var(--amber);
+                      background:var(--amber-bg); padding:3px 9px; border-radius:6px; }
+
+        @media (max-width:560px) {
+          main { padding:26px 18px 64px; }
+          h1 { font-size:34px; } .stat b { font-size:30px; }
+          .top { padding-right:0; } .tally { gap:22px; }
+          .cols { grid-template-columns:1fr; gap:28px; }
+        }
       `}</style>
 
       <div className="top">
-        <h1>Overheard</h1>
-        <span className="count">
-          <span className={live ? 'dot' : 'dot off'} />
-          {open} open
-        </span>
+        <div>
+          <h1>Overheard</h1>
+          <p className="sub">Promises people made to each other, never typed into anything.</p>
+        </div>
+        <div className="tally">
+          <div className="stat live"><b>{open}</b><span>open</span></div>
+          <div className="stat"><b>{commitments.length - open}</b><span>done</span></div>
+          <div className="stat"><b><span className={live ? 'dot' : 'dot off'} />{people.length}</b><span>listening</span></div>
+        </div>
       </div>
-      <p className="sub">Promises people made to each other, never typed into anything.</p>
+
+      <hr className="rule" />
 
       {!anything ? (
         <p className="empty">
@@ -173,20 +220,18 @@ export default function Board() {
       ) : (
         <div className="cols">
           {meetings.length > 0 && (
-            <section className="col" key="__meetings">
-              <div className="who">
-                <div className="av meet">◷</div>
+            <section key="__meetings">
+              <div className="who" style={{ color: 'var(--blue)' }}>
+                <div className="av">◷</div>
                 <div>
                   <h2>Meetings</h2>
-                  <div className="n">{meetings.length} agreed</div>
+                  <div className="n">{meetings.filter(c => c.status === 'open').length} agreed</div>
                 </div>
               </div>
               {meetings.map(c => (
                 <article className={c.status === 'done' ? 'card meet done' : 'card meet'} key={c.id}>
                   <div className="what">{c.what}</div>
-                  <div className="meta">
-                    {c.when && <span className="pill when">{c.when}</span>}
-                  </div>
+                  <div className="meta">{c.when && <span className="pill when">{c.when}</span>}</div>
                   <div className="quote">{c.quote}</div>
                 </article>
               ))}
@@ -194,8 +239,8 @@ export default function Board() {
           )}
 
           {orphans.length > 0 && (
-            <section className="col" key="__orphans">
-              <div className="who">
+            <section key="__orphans">
+              <div className="who" style={{ color: 'var(--faint)' }}>
                 <div className="av">?</div>
                 <div>
                   <h2>Unassigned</h2>
@@ -205,9 +250,7 @@ export default function Board() {
               {orphans.map(c => (
                 <article className={c.status === 'done' ? 'card done' : 'card'} key={c.id}>
                   <div className="what">{c.what}</div>
-                  <div className="meta">
-                    {c.due && <span className="pill due">{c.due}</span>}
-                  </div>
+                  <div className="meta">{c.due && <span className="pill due">{c.due}</span>}</div>
                   <div className="quote">{c.quote}</div>
                 </article>
               ))}
@@ -218,8 +261,8 @@ export default function Board() {
             const mine = promises.filter(c => c.ownerId === p.id)
             const openCount = mine.filter(c => c.status === 'open').length
             return (
-              <section className="col" key={p.id}>
-                <div className="who">
+              <section key={p.id}>
+                <div className="who" style={{ color: personHue(p.id) }}>
                   <div className="av">{initials(p.name)}</div>
                   <div>
                     <h2>{p.name}</h2>
