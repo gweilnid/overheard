@@ -40,10 +40,14 @@ export function addMessage(m: IngestMessage) {
 
 export function applyDiff(diff: Diff): number[] {
   const reactTo: number[] = []
+  // Includes done commitments: a closed one is no longer sent as `open`, but its
+  // source message is still in the window, so the model would recreate the card.
+  const known = new Set(store.commitments.map(c => c.sourceMessageId))
 
   for (const c of diff.create) {
     // A quiet agent that sometimes stays silent beats a chatty one that is wrong.
     if (c.confidence < CONFIDENCE_THRESHOLD) continue
+    if (known.has(c.sourceMessageId)) continue
     store.commitments.push({ ...c, id: crypto.randomUUID(), status: 'open' })
     reactTo.push(c.sourceMessageId)
   }
