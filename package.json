@@ -1,10 +1,14 @@
 {
   "name": "overheard",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "web": "npm run dev -w @overheard/web",
-    "bot": "npm run dev -w @overheard/bot",
-    "eval": "npm run eval -w @overheard/web"
+    "bot": "npm run start -w @overheard/bot",
+    "eval": "npm run eval -w @overheard/web",
+    "bot:watch": "npm run dev -w @overheard/bot"
   }
 }

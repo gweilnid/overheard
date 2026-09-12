@@ -284,6 +284,20 @@ npm run web                 # Next.js on :3000 — board + API
 npm run bot                 # grammY long polling
 ```
 
+> **Never run two bots on one token.** Telegram allows a single `getUpdates`
+> long-poll per bot: a second instance kills the first with `409 Conflict`, and
+> the first does not come back. `npm run bot` therefore runs **without**
+> `--watch` — the watcher restarts its child while the old one still holds the
+> poll, so it conflicts with itself on any file change (a `git rebase` is
+> enough to trigger it). Use `npm run bot:watch` only while editing bot code,
+> never during a demo. `ps` is not proof it is alive — the watcher survives the
+> crash and idles. Check instead:
+>
+> ```bash
+> grep -c Conflict /tmp/overheard-bot.log   # must be 0
+> tail -2 /tmp/overheard-bot.log            # must end in activity
+> ```
+
 `GET /api/commitments` already returns realistic fake data, so **Seat 4 can build
 the board right now** without waiting for anyone.
 
