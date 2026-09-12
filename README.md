@@ -34,3 +34,35 @@ Where the two disagree, `PLAN.md` wins.
 
 TypeScript monorepo. grammY + Next.js + Anthropic SDK. No database — state is
 in-memory in the Next.js process.
+
+## Conversation extraction
+
+`apps/web/lib/extract.ts` uses OpenRouter through native fetch and validates the
+returned commitment diff with Zod. The ingest endpoint is still a stub and does
+not yet call the extractor.
+
+Copy `apps/web/.env.example` to `apps/web/.env.local` and set
+`OPENROUTER_API_KEY`. `OPENROUTER_MODEL` defaults to `openai/gpt-4.1-mini`.
+To switch models, change that variable (for example to
+`anthropic/claude-sonnet-4`), then restart the process if needed to reload its
+environment; no source changes or rebuild are required. Configuration is read on
+every extraction call. Optional `OPENROUTER_SITE_URL` and
+`OPENROUTER_APP_NAME` supply attribution headers.
+
+Server callers can override the model per request:
+
+```ts
+await extract({ messages, open, roster }, { model: 'google/gemini-2.5-flash' })
+```
+
+Precedence is per-request model, environment model, then default (blank values
+are ignored). Models must support chat completions with JSON object output.
+The extractor uses the last 25 nonblank messages. Empty input returns an empty
+diff without a request; configuration, transport, timeout, and validation errors
+throw. Callers should handle errors at their boundary. No transcripts or provider
+response bodies are logged. The module is server-only; standalone Node callers
+must enable the `react-server` condition. The Anthropic key remains available for
+the separately planned CopilotKit integration, but extraction does not use it.
+
+Run `npm run test -w @overheard/web` for mocked extraction tests (no API credits)
+and `npm run typecheck -w @overheard/web` for TypeScript validation.
