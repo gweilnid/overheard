@@ -6,13 +6,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        {/* Pairing from the ui-ux-pro-max design system for this product type:
-            Fira Sans / Fira Code — dashboard, data, precise. */}
+        {/* Pairing 20 "Premium Sans" from the ui-ux-pro-max typography catalogue.
+            DM Sans / DM Mono — modern without being Inter or Space Grotesk, both
+            of which are the house faces of generated UI. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap"
         />
       </head>
       <body style={{ margin: 0 }}>
