@@ -2,18 +2,84 @@
   "_comment": "SEAT 2 + SEAT 5 own this. Eval input AND the on-stage safety net.",
   "_ids": "userId MUST be the real Telegram id, or /me will not find that person's commitments. Run `npm run roster -w @overheard/web` after everyone has spoken in the group to fill in the missing ones.",
   "roster": [
-    { "id": "8234170936", "name": "Yasin" },
-    { "id": "8861360439", "name": "Mehmet Cem" },
-    { "id": "TODO-GOKHAN", "name": "Gokhan" },
-    { "id": "TODO-ATA", "name": "Ata" },
-    { "id": "TODO-SEFA", "name": "Sefa" }
+    {
+      "id": "8234170936",
+      "name": "Yasin"
+    },
+    {
+      "id": "8861360439",
+      "name": "Mehmet Cem"
+    },
+    {
+      "id": "TODO-GOKHAN",
+      "name": "Gokhan"
+    },
+    {
+      "id": "TODO-ATA",
+      "name": "Ata"
+    },
+    {
+      "id": "TODO-SEFA",
+      "name": "Sefa"
+    }
   ],
   "messages": [
-    { "messageId": 101, "chatId": -5332716070, "userId": "8234170936", "name": "Yasin", "ts": 0, "text": "ok so the pricing deck for Thursday, where are we" },
-    { "messageId": 102, "chatId": -5332716070, "userId": "TODO-GOKHAN", "name": "Gokhan", "ts": 1, "text": "still waiting on the numbers from Mehmet" },
-    { "messageId": 103, "chatId": -5332716070, "userId": "8861360439", "name": "Mehmet Cem", "ts": 2, "text": "yeah I'll send them over tomorrow morning" },
-    { "messageId": 104, "chatId": -5332716070, "userId": "8234170936", "name": "Yasin", "ts": 3, "text": "we should probably look at the onboarding flow at some point too" },
-    { "messageId": 105, "chatId": -5332716070, "userId": "TODO-ATA", "name": "Ata", "ts": 4, "text": "one thing at a time" }
+    {
+      "messageId": 101,
+      "chatId": -5332716070,
+      "userId": "8234170936",
+      "name": "Yasin",
+      "ts": 0,
+      "text": "ok so the pricing deck for Thursday, where are we"
+    },
+    {
+      "messageId": 102,
+      "chatId": -5332716070,
+      "userId": "TODO-GOKHAN",
+      "name": "Gokhan",
+      "ts": 1,
+      "text": "still waiting on the numbers from Mehmet"
+    },
+    {
+      "messageId": 103,
+      "chatId": -5332716070,
+      "userId": "8861360439",
+      "name": "Mehmet Cem",
+      "ts": 2,
+      "text": "yeah I'll send them over tomorrow morning"
+    },
+    {
+      "messageId": 104,
+      "chatId": -5332716070,
+      "userId": "8234170936",
+      "name": "Yasin",
+      "ts": 3,
+      "text": "we should probably look at the onboarding flow at some point too"
+    },
+    {
+      "messageId": 105,
+      "chatId": -5332716070,
+      "userId": "TODO-ATA",
+      "name": "Ata",
+      "ts": 4,
+      "text": "one thing at a time"
+    },
+    {
+      "messageId": 106,
+      "chatId": -5332716070,
+      "userId": "8234170936",
+      "name": "Yasin",
+      "ts": 5,
+      "text": "also let's do the sprint review on 15.9. at 15:00"
+    },
+    {
+      "messageId": 107,
+      "chatId": -5332716070,
+      "userId": "8861360439",
+      "name": "Mehmet Cem",
+      "ts": 6,
+      "text": "works for me"
+    }
   ],
   "expected": [
     {
@@ -25,29 +91,71 @@
     },
     {
       "note": "Message 104 must produce NOTHING. 'we should probably at some point' is not a commitment."
+    },
+    {
+      "kind": "meeting",
+      "what": "sprint review",
+      "when": "15.9. at 15:00",
+      "sourceMessageId": 106,
+      "note": "A meeting, not a promise. ownerId must be '' — nobody owes anybody anything here."
     }
   ],
   "seedCommitments": [
     {
-      "id": "seed-1", "ownerId": "8861360439", "ownerName": "Mehmet Cem",
-      "what": "send the pricing numbers to Gokhan", "toWhom": "Gokhan",
-      "due": "tomorrow morning", "status": "open",
+      "id": "seed-1",
+      "ownerId": "8861360439",
+      "ownerName": "Mehmet Cem",
+      "what": "send the pricing numbers to Gokhan",
+      "toWhom": "Gokhan",
+      "due": "tomorrow morning",
+      "status": "open",
       "quote": "yeah I'll send them over tomorrow morning",
-      "sourceMessageId": 103, "confidence": 0.91
+      "sourceMessageId": 103,
+      "confidence": 0.91,
+      "kind": "commitment",
+      "when": null
     },
     {
-      "id": "seed-2", "ownerId": "TODO-ATA", "ownerName": "Ata",
-      "what": "walk the client through the deck", "toWhom": "Yasin",
-      "due": "Thursday", "status": "open",
+      "id": "seed-2",
+      "ownerId": "TODO-ATA",
+      "ownerName": "Ata",
+      "what": "walk the client through the deck",
+      "toWhom": "Yasin",
+      "due": "Thursday",
+      "status": "open",
       "quote": "I can take it to them Thursday",
-      "sourceMessageId": 88, "confidence": 0.84
+      "sourceMessageId": 88,
+      "confidence": 0.84,
+      "kind": "commitment",
+      "when": null
     },
     {
-      "id": "seed-3", "ownerId": "8234170936", "ownerName": "Yasin",
-      "what": "book the room for the review", "toWhom": null,
-      "due": null, "status": "done",
+      "id": "seed-3",
+      "ownerId": "8234170936",
+      "ownerName": "Yasin",
+      "what": "book the room for the review",
+      "toWhom": null,
+      "due": null,
+      "status": "done",
       "quote": "fine, I'll book the room",
-      "sourceMessageId": 71, "confidence": 0.79
+      "sourceMessageId": 71,
+      "confidence": 0.79,
+      "kind": "commitment",
+      "when": null
+    },
+    {
+      "id": "seed-4",
+      "kind": "meeting",
+      "ownerId": "",
+      "ownerName": "",
+      "what": "sprint review",
+      "toWhom": null,
+      "due": null,
+      "when": "15.9.2026 at 15:00",
+      "status": "open",
+      "quote": "also let's do the sprint review on 15.9. at 15:00",
+      "sourceMessageId": 106,
+      "confidence": 0.88
     }
   ]
 }

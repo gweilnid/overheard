@@ -8,8 +8,8 @@ const input = {
   roster: [{ id: 'p1', name: 'Ada' }],
 }
 const diff = {
-  create: [{ ownerId: 'p1', ownerName: 'Ada', what: 'send it', toWhom: null,
-    due: 'tomorrow', quote: "I'll send it tomorrow", sourceMessageId: 1, confidence: 0.9 }],
+  create: [{ kind: 'commitment' as const, ownerId: 'p1', ownerName: 'Ada', what: 'send it', toWhom: null,
+    due: 'tomorrow', when: null, quote: "I'll send it tomorrow", sourceMessageId: 1, confidence: 0.9 }],
   update: [], close: [],
 }
 const envKeys = ['OPENROUTER_API_KEY', 'OPENROUTER_MODEL', 'OPENROUTER_SITE_URL', 'OPENROUTER_APP_NAME'] as const

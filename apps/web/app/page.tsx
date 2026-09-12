@@ -26,7 +26,13 @@ export default function Board() {
   }, [])
 
   const open = commitments.filter(c => c.status === 'open').length
-  const withCommitments = people.filter(p => commitments.some(c => c.ownerId === p.id))
+  const meetings = commitments.filter(c => c.kind === 'meeting')
+  const promises = commitments.filter(c => c.kind !== 'meeting')
+  // ownerId is '' when the model cannot attribute it — without this column those
+  // cards exist in the store and appear nowhere on screen.
+  const orphans = promises.filter(c => !people.some(p => p.id === c.ownerId))
+  const withCommitments = people.filter(p => promises.some(c => c.ownerId === p.id))
+  const anything = meetings.length || promises.length
 
   return (
     <main>
@@ -56,6 +62,9 @@ export default function Board() {
         .pill { font-size:14px; padding:4px 11px; border-radius:999px; background:#26262c; color:#b4b4c0; }
         .pill.due { background:#2a2418; color:#e0b661; }
         .pill.ok  { background:#18251d; color:#5fbf8a; }
+        .pill.when{ background:#1b2430; color:#74aee0; }
+        .av.meet  { background:#1b2430; color:#74aee0; font-size:19px; }
+        .card.meet{ border-color:#24303d; }
         .quote { margin-top:14px; padding-left:13px; border-left:2px solid #2e2e36;
                  font-size:16px; line-height:1.45; color:#83838f; font-style:italic; }
         .empty { color:#5a5a63; font-size:20px; margin-top:40px; line-height:1.6; }
@@ -71,15 +80,57 @@ export default function Board() {
       </div>
       <p className="sub">Promises people made to each other, never typed into anything.</p>
 
-      {!withCommitments.length ? (
+      {!anything ? (
         <p className="empty">
           Listening.<br />
           Say something in the group you intend to do — <code>I&apos;ll send the deck tomorrow</code>
         </p>
       ) : (
         <div className="cols">
+          {meetings.length > 0 && (
+            <section className="col" key="__meetings">
+              <div className="who">
+                <div className="av meet">◷</div>
+                <div>
+                  <h2>Meetings</h2>
+                  <div className="n">{meetings.length} agreed</div>
+                </div>
+              </div>
+              {meetings.map(c => (
+                <article className={c.status === 'done' ? 'card meet done' : 'card meet'} key={c.id}>
+                  <div className="what">{c.what}</div>
+                  <div className="meta">
+                    {c.when && <span className="pill when">{c.when}</span>}
+                  </div>
+                  <div className="quote">{c.quote}</div>
+                </article>
+              ))}
+            </section>
+          )}
+
+          {orphans.length > 0 && (
+            <section className="col" key="__orphans">
+              <div className="who">
+                <div className="av">?</div>
+                <div>
+                  <h2>Unassigned</h2>
+                  <div className="n">{orphans.length} open</div>
+                </div>
+              </div>
+              {orphans.map(c => (
+                <article className={c.status === 'done' ? 'card done' : 'card'} key={c.id}>
+                  <div className="what">{c.what}</div>
+                  <div className="meta">
+                    {c.due && <span className="pill due">{c.due}</span>}
+                  </div>
+                  <div className="quote">{c.quote}</div>
+                </article>
+              ))}
+            </section>
+          )}
+
           {withCommitments.map(p => {
-            const mine = commitments.filter(c => c.ownerId === p.id)
+            const mine = promises.filter(c => c.ownerId === p.id)
             const openCount = mine.filter(c => c.status === 'open').length
             return (
               <section className="col" key={p.id}>

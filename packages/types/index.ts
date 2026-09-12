@@ -15,13 +15,21 @@ export type IngestMessage = {
   ts: number          // unix seconds
 }
 
+// 'commitment' — one person owes something to someone.
+// 'meeting'    — the group agreed to meet. No single owner; `when` carries the
+//                time as spoken. Filing these as commitments makes a meeting
+//                look like a debt one person owes.
+export type Kind = 'commitment' | 'meeting'
+
 export type Commitment = {
   id: string
-  ownerId: string     // MUST be a Person.id from the roster, or ''
+  kind: Kind
+  ownerId: string     // MUST be a Person.id from the roster, or '' (meetings, unknown)
   ownerName: string
   what: string        // short, imperative: "send the pricing numbers"
   toWhom: string | null
   due: string | null  // free text as spoken: "tomorrow morning"
+  when: string | null // meetings only: "Tuesday 15:00", "15.9. at 10"
   status: 'open' | 'done'
   quote: string       // VERBATIM from the source message
   sourceMessageId: number
