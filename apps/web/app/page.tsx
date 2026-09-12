@@ -6,6 +6,18 @@ import type { Commitment, Person } from '@overheard/types'
 
 const POLL_MS = 2000
 
+// `due` is whatever the person actually said — "tonight", "this evening",
+// "in a minute". Asked "what is due today", the model matched the literal word
+// and reported none, while the board showed several. Bucket it in code instead.
+function dueBucket(due: string | null): 'today' | 'tomorrow' | 'this week' | 'later' | 'none' {
+  if (!due) return 'none'
+  const d = due.toLowerCase()
+  if (/\b(today|tonight|this evening|this afternoon|this morning|now|in a minute|in the next|right after|after lunch|before we go|before the demo|at the rehearsal|before the rehearsal)\b/.test(d)) return 'today'
+  if (/\btomorrow\b/.test(d)) return 'tomorrow'
+  if (/\b(monday|tuesday|wednesday|thursday|friday|this week)\b/.test(d)) return 'this week'
+  return 'later'
+}
+
 function initials(name: string) {
   return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
@@ -56,6 +68,29 @@ export default function Board() {
       })),
       openMeetings: commitments.filter(c => c.kind === 'meeting' && c.status === 'open').length,
     },
+  })
+
+  useCopilotReadable({
+    description:
+      'Open items already grouped by when they are due. A card\'s `due` is free text ' +
+      '("tonight", "this evening", "in a minute"), so for ANY question about what is ' +
+      'due today, tomorrow or this week, read these lists — do not match the text ' +
+      'yourself. Quote the original `due` wording back to the user.',
+    value: (['today', 'tomorrow', 'this week', 'later', 'none'] as const).reduce(
+      (acc, bucket) => {
+        acc[bucket] = commitments
+          .filter(c => c.status === 'open' && dueBucket(c.kind === 'meeting' ? c.when : c.due) === bucket)
+          .map(c => ({
+            id: c.id,
+            kind: c.kind,
+            who: c.ownerName || 'the group',
+            what: c.what,
+            due: c.due ?? c.when,
+          }))
+        return acc
+      },
+      {} as Record<string, unknown[]>,
+    ),
   })
 
   useCopilotAction({
