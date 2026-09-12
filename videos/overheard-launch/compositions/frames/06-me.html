@@ -1,0 +1,598 @@
+<template>
+  <style>
+    /* ── fonts (shipped with the project — never a network @import) ───────── */
+    @font-face {
+      font-family: "DM Sans";
+      font-style: normal;
+      font-weight: 100 1000;
+      font-display: block;
+      src: url("capture/assets/fonts/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+        U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+        U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "DM Sans";
+      font-style: normal;
+      font-weight: 100 1000;
+      font-display: block;
+      src: url("capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+        U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+        U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "DM Mono";
+      font-style: normal;
+      font-weight: 400 500;
+      font-display: block;
+      src: url("capture/assets/fonts/aFTU7PB1QTsUX8KYthSQBK6PYK3EXw.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+        U+2000-206F, U+2122, U+2212;
+    }
+
+    /* ── root ─────────────────────────────────────────────────────────────── */
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      isolation: isolate;
+      font-family: "DM Sans", sans-serif;
+      font-optical-sizing: auto;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root *,
+    #root *::before,
+    #root *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* depth layer 1 — the video's ground (frame.md bg) */
+    #me-ground {
+      position: absolute;
+      inset: 0;
+      background: #f1f1f4;
+    }
+
+    /* depth layer 2 — the private chat */
+    #me-stage {
+      position: absolute;
+      inset: 0;
+    }
+
+    #me-panel {
+      position: absolute;
+      left: 400px;
+      top: 24px;
+      width: 1120px;
+      height: 866px;
+      border-radius: 16px;
+      border: 1.5px solid #ebebf0;
+      background: #ffffff;
+      overflow: hidden;
+      will-change: transform, opacity;
+    }
+
+    /* ── Telegram chrome (Telegram's own palette — the licensed exception) ─── */
+    #me-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 96px;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      background: #ffffff;
+      border-bottom: 1px solid #ebebf0;
+      z-index: 3;
+    }
+    #me-avatar {
+      flex: none;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(160deg, #2f2f36 0%, #111114 100%);
+      color: #ffffff;
+      font-size: 25px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #me-titleblock {
+      margin-left: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+    }
+    #me-title {
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.012em;
+      color: #111114;
+      white-space: nowrap;
+    }
+    /* the giveaway: this is a DM with a bot, not the group */
+    #me-sub {
+      font-size: 19px;
+      font-weight: 400;
+      line-height: 1;
+      color: #8d969c;
+      white-space: nowrap;
+    }
+
+    /* ── the thread: bottom-anchored, exactly like the real app ───────────── */
+    #me-threadwrap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 96px;
+      bottom: 80px;
+      overflow: hidden;
+      background: #eef1f5;
+    }
+    #me-column {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 16px 26px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    /* outgoing — the only message the human sends */
+    #me-out {
+      align-self: flex-end;
+      background: #eeffdd;
+      border-radius: 16px 16px 6px 16px;
+      padding: 13px 20px 9px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 2px rgba(16, 18, 22, 0.1);
+      display: flex;
+      flex-direction: column;
+      will-change: transform, opacity;
+    }
+    #me-out-text {
+      font-family: "DM Mono", ui-monospace, monospace;
+      font-size: 26px;
+      line-height: 1.2;
+      color: #101216;
+      white-space: nowrap;
+    }
+
+    /* the bot's digest */
+    #me-msg {
+      width: 100%;
+      background: #ffffff;
+      border-radius: 16px 16px 16px 6px;
+      padding: 18px 26px;
+      box-shadow: 0 1px 2px rgba(16, 18, 22, 0.1);
+      will-change: transform, opacity;
+    }
+    .me-head {
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: #101216;
+      white-space: nowrap;
+      will-change: opacity;
+    }
+    /* the two header states occupy the same slot — no reflow on the edit */
+    #me-headslot {
+      position: relative;
+      height: 31px;
+      margin-bottom: 14px;
+    }
+    #me-headslot .me-head {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .me-item {
+      overflow: hidden;
+      padding-bottom: 10px;
+      will-change: opacity, height;
+    }
+    .me-item:last-child {
+      padding-bottom: 0;
+    }
+    .me-line {
+      display: flex;
+      align-items: baseline;
+      font-size: 22px;
+      line-height: 1.3;
+      letter-spacing: -0.008em;
+      color: #101216;
+      white-space: nowrap;
+    }
+    /* both numberings stacked in one slot so renumbering never shifts the text */
+    .me-num {
+      position: relative;
+      flex: none;
+      width: 34px;
+      height: 29px;
+    }
+    .me-num span {
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .me-quote {
+      margin-top: 3px;
+      margin-left: 34px;
+      font-size: 19px;
+      line-height: 1.3;
+      color: #8d969c;
+      white-space: nowrap;
+    }
+
+    /* inline keyboard */
+    #me-keys {
+      width: 100%;
+      margin-top: 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .me-key {
+      position: relative;
+      height: 40px;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(16, 18, 22, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      will-change: opacity, transform, height;
+    }
+    .me-key span {
+      position: absolute;
+      font-size: 21px;
+      font-weight: 500;
+      color: #3390ec;
+      white-space: nowrap;
+    }
+
+    /* the callback toast */
+    #me-toast {
+      position: absolute;
+      top: 118px;
+      left: 50%;
+      margin-left: -118px;
+      width: 236px;
+      height: 54px;
+      border-radius: 27px;
+      background: rgba(17, 17, 20, 0.9);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      z-index: 4;
+      will-change: transform, opacity;
+    }
+    #me-toast-text {
+      font-size: 23px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    #me-toast svg {
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+
+    /* composer */
+    #me-composer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 80px;
+      background: #ffffff;
+      border-top: 1px solid #ebebf0;
+      display: flex;
+      align-items: center;
+      padding: 0 26px;
+      gap: 16px;
+      z-index: 2;
+    }
+    #me-input {
+      flex: 1 1 auto;
+      height: 48px;
+      border-radius: 24px;
+      background: #f4f4f7;
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+    }
+    #me-input-text {
+      font-family: "DM Mono", ui-monospace, monospace;
+      font-size: 22px;
+      color: #101216;
+      white-space: pre;
+    }
+    #me-placeholder {
+      font-size: 22px;
+      color: #a2a2ac;
+      white-space: nowrap;
+    }
+    #me-caret {
+      width: 2px;
+      height: 26px;
+      background: #3390ec;
+      margin-left: 2px;
+      will-change: opacity;
+    }
+    #me-send svg {
+      display: block;
+      width: 30px;
+      height: 30px;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="06-me"
+    data-start="0"
+    data-duration="10.5"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div id="me-ground" class="clip" data-start="0" data-duration="10.5" data-track-index="0"></div>
+
+    <div id="me-stage" class="clip" data-start="0" data-duration="10.5" data-track-index="1">
+      <div id="me-panel">
+        <div id="me-header">
+          <div id="me-avatar">O</div>
+          <div id="me-titleblock">
+            <div id="me-title">Overheard</div>
+            <div id="me-sub">bot</div>
+          </div>
+        </div>
+
+        <div id="me-threadwrap">
+          <div id="me-column">
+            <div id="me-out"><div id="me-out-text">/me</div></div>
+
+            <div id="me-msg">
+              <div id="me-headslot">
+                <div class="me-head" id="me-head-5">You&#8217;re on the hook for 5 things:</div>
+                <div class="me-head" id="me-head-4">You&#8217;re on the hook for 4 things:</div>
+              </div>
+
+              <div class="me-item" id="me-item-1">
+                <div class="me-line">
+                  <span class="me-num"><span>1.</span></span>
+                  <span>get the OpenRouter credits topped up &#8212; tonight</span>
+                </div>
+                <div class="me-quote">&#8220;I&#8217;ll top up the credits tonight&#8221;</div>
+              </div>
+
+              <div class="me-item" id="me-item-2">
+                <div class="me-line">
+                  <span class="me-num"
+                    ><span class="na">2.</span><span class="nb">1.</span></span
+                  >
+                  <span>write the 90 second script &#8212; this evening (to Sefa)</span>
+                </div>
+                <div class="me-quote">&#8220;I&#8217;ll draft the script this evening&#8221;</div>
+              </div>
+
+              <div class="me-item" id="me-item-3">
+                <div class="me-line">
+                  <span class="me-num"
+                    ><span class="na">3.</span><span class="nb">2.</span></span
+                  >
+                  <span
+                    >decide what we cut if we run out of time &#8212; before the rehearsal</span
+                  >
+                </div>
+                <div class="me-quote">
+                  &#8220;I&#8217;ll decide the cut list before we rehearse&#8221;
+                </div>
+              </div>
+
+              <div class="me-item" id="me-item-4">
+                <div class="me-line">
+                  <span class="me-num"
+                    ><span class="na">4.</span><span class="nb">3.</span></span
+                  >
+                  <span>send the repo link to the judges &#8212; after the demo</span>
+                </div>
+                <div class="me-quote">
+                  &#8220;I&#8217;ll send them the repo afterwards&#8221;
+                </div>
+              </div>
+
+              <div class="me-item" id="me-item-5">
+                <div class="me-line">
+                  <span class="me-num"
+                    ><span class="na">5.</span><span class="nb">4.</span></span
+                  >
+                  <span>review the ata-dev branch &#8212; tonight (to Ata)</span>
+                </div>
+                <div class="me-quote">&#8220;I&#8217;ll look at your branch tonight&#8221;</div>
+              </div>
+            </div>
+
+            <div id="me-keys">
+              <div class="me-key" id="me-key-1"><span class="na">Done: 1</span></div>
+              <div class="me-key" id="me-key-2">
+                <span class="na">Done: 2</span><span class="nb">Done: 1</span>
+              </div>
+              <div class="me-key" id="me-key-3">
+                <span class="na">Done: 3</span><span class="nb">Done: 2</span>
+              </div>
+              <div class="me-key" id="me-key-4">
+                <span class="na">Done: 4</span><span class="nb">Done: 3</span>
+              </div>
+              <div class="me-key" id="me-key-5">
+                <span class="na">Done: 5</span><span class="nb">Done: 4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="me-toast">
+          <span id="me-toast-text">Done</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M16.6 2.9a2.1 2.1 0 0 1 3 0l1.5 1.5a2.1 2.1 0 0 1 0 3L8.8 19.7 3 21l1.3-5.8L16.6 2.9z"
+              stroke="#ffffff"
+              stroke-width="1.9"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path d="M14.9 4.6l4.5 4.5" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" />
+          </svg>
+        </div>
+
+        <div id="me-composer">
+          <div id="me-input">
+            <span id="me-input-text"></span>
+            <span id="me-caret"></span>
+            <span id="me-placeholder">Message</span>
+          </div>
+          <div id="me-send">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M3.4 11.4 20 4.6l-6.8 16.6-2.3-7.5-7.5-2.3z"
+                stroke="#8E8E99"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      var $ = function (id) {
+        return document.getElementById(id);
+      };
+      var panel = $("me-panel");
+      var out = $("me-out");
+      var msg = $("me-msg");
+      var keys = $("me-keys");
+      var toast = $("me-toast");
+      var caret = $("me-caret");
+      var inputText = $("me-input-text");
+      var placeholder = $("me-placeholder");
+      var head5 = $("me-head-5");
+      var head4 = $("me-head-4");
+
+      var items = [];
+      var keyEls = [];
+      var i;
+      for (i = 1; i <= 5; i += 1) {
+        items.push($("me-item-" + i));
+        keyEls.push($("me-key-" + i));
+      }
+
+      // Every "after the edit" label starts hidden and its "before" twin visible.
+      // Both live in the same slot, so the swap never reflows the message.
+      var na = document.querySelectorAll("#root .na");
+      var nb = document.querySelectorAll("#root .nb");
+
+      // ── resting state ──────────────────────────────────────────────────────
+      // Immediate gsap.set, NOT a zero-duration set at position 0: the latter does
+      // not render while the playhead sits exactly at 0, so frame 0 would show
+      // every hidden element.
+      gsap.set(panel, { opacity: 0, y: 16 });
+      gsap.set(out, { opacity: 0, scale: 0.92, transformOrigin: "100% 100%" });
+      gsap.set(msg, { opacity: 0, y: 14, display: "none" });
+      gsap.set(items, { opacity: 0 });
+      gsap.set(keyEls, { opacity: 0, y: 8 });
+      gsap.set(keys, { display: "none" });
+      gsap.set(toast, { opacity: 0, y: -22 });
+      gsap.set(head5, { opacity: 1 });
+      gsap.set(head4, { opacity: 0 });
+      gsap.set(na, { opacity: 1 });
+      gsap.set(nb, { opacity: 0 });
+      gsap.set(caret, { opacity: 0 });
+      gsap.set(placeholder, { opacity: 1 });
+      gsap.set(inputText, { opacity: 1, innerText: "" });
+
+      // ── Scene 1 (0.0–1.6s) — the private chat settles ──────────────────────
+      tl.to(panel, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.06);
+
+      // ── Scene 2 (1.6–2.8s) — /me types and sends ───────────────────────────
+      // Discrete tl.set writes, never an onUpdate driver: plain seek() suppresses
+      // callbacks, so a driver-based typewriter renders empty under the renderer.
+      var TYPED = ["", "/", "/m", "/me"];
+      var TYPE_AT = [1.6, 1.62, 1.78, 1.94];
+      for (i = 0; i < TYPED.length; i += 1) {
+        tl.set(inputText, { innerText: TYPED[i] }, TYPE_AT[i]);
+      }
+      tl.set(placeholder, { opacity: 0 }, 1.6);
+      tl.set(caret, { opacity: 1 }, 1.6);
+
+      // caret blink — a finite ladder of discrete writes, seek-safe in both
+      // directions (no repeat/yoyo, which the renderer cannot sample).
+      var b;
+      for (b = 0; b < 34; b += 1) {
+        tl.set(caret, { opacity: b % 2 === 0 ? 1 : 0.15 }, 1.6 + b * 0.24);
+      }
+
+      // send
+      tl.set(inputText, { innerText: "" }, 2.42);
+      tl.set(placeholder, { opacity: 1 }, 2.42);
+      tl.to(out, { opacity: 1, scale: 1, duration: 0.34, ease: "power3.out" }, 2.42);
+
+      // ── Scene 3 (2.8–5.2s) — the digest arrives and reads line by line ─────
+      tl.set(msg, { display: "block" }, 2.9);
+      tl.to(msg, { opacity: 1, y: 0, duration: 0.42, ease: "power3.out" }, 2.9);
+      tl.to(items, { opacity: 1, duration: 0.3, stagger: 0.27, ease: "power2.out" }, 3.34);
+
+      // ── Scene 4 (5.2–6.6s) — the inline keyboard ──────────────────────────
+      tl.set(keys, { display: "flex" }, 5.24);
+      tl.to(keyEls, { opacity: 1, y: 0, duration: 0.26, stagger: 0.1, ease: "power2.out" }, 5.24);
+
+      // ── Scene 5 (6.6–8.4s) — Done: 1 is pressed; the message edits in place ─
+      tl.to(keyEls[0], { scale: 0.975, duration: 0.1, ease: "power2.out" }, 6.72);
+      tl.to(keyEls[0], { scale: 1, duration: 0.16, ease: "power2.out" }, 6.82);
+
+      tl.to(toast, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 6.9);
+
+      // the real bot edits the SAME message: item 1 leaves, the rest renumber
+      tl.to(items[0], { opacity: 0, duration: 0.22, ease: "power2.out" }, 7.3);
+      tl.to(items[0], { height: 0, duration: 0.42, ease: "power3.inOut" }, 7.42);
+      tl.to(keyEls[0], { opacity: 0, duration: 0.22, ease: "power2.out" }, 7.3);
+      tl.to(keyEls[0], { height: 0, duration: 0.42, ease: "power3.inOut" }, 7.42);
+      tl.to(head5, { opacity: 0, duration: 0.2, ease: "none" }, 7.46);
+      tl.to(head4, { opacity: 1, duration: 0.2, ease: "none" }, 7.46);
+      tl.to(na, { opacity: 0, duration: 0.2, ease: "none" }, 7.46);
+      tl.to(nb, { opacity: 1, duration: 0.2, ease: "none" }, 7.46);
+
+      tl.to(toast, { opacity: 0, y: -18, duration: 0.34, ease: "power2.in" }, 8.0);
+
+      // ── Scene 6 (8.4–10.0s) — held; only the caret is alive ───────────────
+      tl.set({}, {}, 10);
+
+      window.__timelines["06-me"] = tl;
+    })();
+  </script>
+</template>

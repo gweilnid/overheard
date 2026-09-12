@@ -14,7 +14,7 @@
 - duration: 8s
 - poster: 6s
 - transition_in: crossfade
-- status: outline
+- status: animated
 - blueprint: grid-card-assemble (Reproduce)
 - focal: screenshots/scroll-000.png
 - roles: screenshots/scroll-000.png = cutout · screenshots/full-page.png = supporting · ground = background

@@ -1,4 +1,4 @@
-# Frame packet: 01-hook
+# Frame packet: 07-point
 
 ## Project inputs
 
@@ -8,32 +8,34 @@
 
 ## Assigned storyboard block
 
-## Frame 1 — Hook
+## Frame 7 — The point
 
-- scene: Two lines of type state the thesis cold, on the product's own ground
-- duration: 4s
-- poster: 3s
-- transition_in: cut
+- scene: The chat returns, scrolled through the whole session — every agent message count still zero
+- duration: 5s
+- poster: 4s
+- transition_in: crossfade
 - status: animated
-- blueprint: kinetic-type-beats (Reproduce)
-- focal: the second line's turn — "and nowhere else"
-- roles: none (typographic frame)
+- blueprint: kinetic-type-beats (Adapt)
+- focal: the counter pair — 1 reaction / 0 messages
+- roles: recreated thread = background (dimmed ~40%, unreadable, present only as texture) · counter pair = cutout
 - asset_candidates: none
-- src: compositions/frames/01-hook.html
+- src: compositions/frames/07-point.html
 
-Open on the claim, not the product. Every team already says what it is going to
-do — out loud, in the group, in passing — and then loses it. State that, and the
-rest of the video is the proof.
+Pay off the hook with the restraint. Everything just shown came out of a group the
+agent never once posted into. Say the number: one reaction, zero messages.
 
-Scene 1 (0.0–1.5s): bare `bg` ground. Display line one — "Everything your team
-promised today" — enters as a single mask-up reveal, set left on the golden
-upper-third, ~70% of canvas width. Nothing else on screen.
-Scene 2 (1.5–2.9s): line two — "is in the chat." — lands beneath it on the same
-left margin, same weight, by hard cut rather than a fade; the two lines now read
-as one sentence. Layout stays rule-of-thirds, two depth layers.
-Scene 3 (2.9–4.0s): the closing clause "And nowhere else." swaps in on the third
-line in `primary` — the frame's only accent — and everything holds still. No push,
-no drift; the stillness is what makes the cut to the chat land.
+Adapt: keep the full-screen statement beats, but the payoff is a **numeral pair**
+rather than a spring-popped word, and it arrives already still — this is the film's
+breather and nothing in it may feel eager.
+
+Scene 1 (0.0–1.6s): the Telegram thread returns behind everything, dimmed ~40% and
+blurred past reading — texture, not content. Centred over it, "Overheard sat in that
+group all morning." in display weight, ~55% of canvas.
+Scene 2 (1.6–3.2s): the line clears and the counter pair sets in its place, centred,
+tabular: **1 reaction** in `primary` · **0 messages** in `text`. Both arrive together
+by a single mask-up — no count-up, no stagger; the restraint is the content.
+Scene 3 (3.2–5.0s): held, completely still. A hairline rule draws once beneath the
+pair and stops. Nothing else moves.
 
 ## Selected blueprint: kinetic-type-beats
 

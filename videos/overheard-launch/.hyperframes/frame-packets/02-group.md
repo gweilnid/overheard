@@ -14,7 +14,7 @@
 - duration: 9s
 - poster: 7s
 - transition_in: crossfade
-- status: outline
+- status: animated
 - blueprint: grid-card-assemble (Adapt)
 - focal: Yasin's message — "I'll send the repo link to the judges after the demo"
 - roles: recreated Telegram thread = cutout (the frame's subject) · `bg` ground = background

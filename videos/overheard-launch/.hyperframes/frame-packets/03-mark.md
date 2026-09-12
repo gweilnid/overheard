@@ -10,11 +10,11 @@
 
 ## Frame 3 — The mark
 
-- scene: A ✍️ reaction lands on that one message; the camera leaves the chat and travels to the board, where the card it became is already waiting
-- duration: 8s
-- poster: 6s
+- scene: A ✍️ reaction lands on that one message; the camera travels to the board, and the card it became is read close-up before it docks into its column
+- duration: 10s
+- poster: 5s
 - transition_in: cut
-- status: outline
+- status: animated
 - blueprint: camera-journey (Reproduce — sub-shape A, action roundtrip)
 - focal: screenshots/scroll-000.png
 - roles: screenshots/scroll-000.png = cutout · recreated thread = supporting · ground = background
@@ -37,11 +37,17 @@ the mark is the only thing that moves. Nothing is written into the chat.
 Scene 3 (2.6–4.6s): the camera swoops off the message to the right, the thread sliding
 out of frame, and the board plate travels in behind it — one continuous move, motion
 blur through the middle of the leg, decelerating hard. Layered depth, three planes.
-Scene 4 (4.6–6.4s): the board lands at 1:1 and the consequence renders as element
-motion: **the card "send the repo link to the judges" scales up into the Yasin column**
-with its `primary` outline, tagged `after the demo`, the verbatim quote reading in
-`text-light` beneath it — the same words the bubble just held.
-Scene 5 (6.4–8.0s): **held.** The outline fades from `primary` to `border` as the card
+Scene 4 (4.6–6.6s): the board lands at 1:1, and the card the sentence became
+**materialises large and centred over it** — big enough to read at a glance: what
+(`send the repo link to the judges`), the `after the demo` tag, and the verbatim quote
+underneath. The plate dims behind it. Hold it there long enough to actually be read;
+this is the payoff of the mark and it must not be squinted at. Centred hero, ~45% of
+frame, two depth layers.
+Scene 5 (6.6–8.4s): the card **shrinks and travels down into its real slot in the Yasin
+column**, landing on the plate's own geometry at the plate's own type size, outline in
+`primary`. One continuous move, decelerating; the plate lifts back to full brightness as
+it lands. This is the beat that says the card is not an overlay — it lives on the board.
+Scene 6 (8.4–10.0s): **held.** The outline fades from `primary` to `border` as the card
 becomes an ordinary card among the others, and the frame stops entirely. Nothing moves
 into the cut.
 

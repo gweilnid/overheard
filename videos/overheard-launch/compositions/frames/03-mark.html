@@ -3,7 +3,7 @@
     id="root"
     data-composition-id="03-mark"
     data-start="0"
-    data-duration="8.5"
+    data-duration="10.5"
     data-width="1920"
     data-height="1080"
   >
@@ -278,7 +278,7 @@
         height: 1080px;
       }
 
-      /* white gap in the Yasin column where the new card will land */
+      /* the empty slot in the Yasin column that the card will fill */
       #mk-slot {
         position: absolute;
         left: 26px;
@@ -288,6 +288,19 @@
         background: #ffffff;
       }
 
+      /* the cream scrim that pushes the plate back while the card is read */
+      #mk-dim {
+        position: absolute;
+        inset: 0;
+        background: #f1f1f4;
+        opacity: 0;
+      }
+
+      /* ---------- the card — authored at the PLATE's own geometry ----------
+       * Scene 4 shows this exact element at scale 3 (864x312, 45% of frame);
+       * Scene 5 shrinks it to 1.0 into the slot. One element, one continuous
+       * move — which is what proves the card lives on the board.
+       * ------------------------------------------------------------------ */
       #mk-card {
         position: absolute;
         left: 28px;
@@ -296,11 +309,10 @@
         height: 104px;
         padding: 10px 12px;
         border-radius: 10px;
-        background: rgba(245, 64, 29, 0.08);
+        background: #ffffff;
         border: 2px solid #f5401d;
         transform-origin: 50% 50%;
         opacity: 0;
-        will-change: transform;
       }
 
       #mk-card-what {
@@ -313,7 +325,7 @@
 
       #mk-card-tag {
         display: inline-block;
-        margin-top: 6px;
+        margin-top: 5px;
         height: 18px;
         padding: 0 7px;
         border-radius: 4px;
@@ -323,31 +335,36 @@
         font-size: 11px;
         line-height: 18px;
         white-space: nowrap;
+        transform-origin: 0% 50%;
       }
 
       #mk-card-quote {
-        margin-top: 6px;
+        margin-top: 5px;
         font-size: 12px;
         font-weight: 400;
-        line-height: 16px;
-        color: #a2a2ac;
+        line-height: 15px;
+        color: #6a6a74;
       }
 
+      /* the materialise pulse — a SIBLING of the card, concentric with it
+       * (same centre 172/396, 6px proud on every side), so it can be posed
+       * with the card's own Scene-4 transform without overflowing the card. */
       #mk-card-ring {
         position: absolute;
-        left: 20px;
-        top: 336px;
-        width: 304px;
-        height: 118px;
-        border-radius: 13px;
+        left: 22px;
+        top: 338px;
+        width: 300px;
+        height: 116px;
+        border-radius: 14px;
         border: 2px solid rgba(245, 64, 29, 0.55);
         transform-origin: 50% 50%;
         opacity: 0;
+        pointer-events: none;
       }
     </style>
 
     <!-- plane 0 — static ground -->
-    <div id="mk-ground" class="clip" data-start="0" data-duration="8.5" data-track-index="0"></div>
+    <div id="mk-ground" class="clip" data-start="0" data-duration="10.5" data-track-index="0"></div>
 
     <svg id="mk-defs" aria-hidden="true">
       <filter id="mk-streak" x="-30%" y="-30%" width="160%" height="160%">
@@ -360,7 +377,7 @@
       id="mk-world"
       class="clip"
       data-start="0"
-      data-duration="8.5"
+      data-duration="10.5"
       data-track-index="1"
       data-layout-allow-overflow
     >
@@ -370,6 +387,7 @@
       <div id="mk-board">
         <img src="assets/scroll-000.png" width="1920" height="1080" alt="" />
         <div id="mk-slot"></div>
+        <div id="mk-dim"></div>
         <div id="mk-card-ring"></div>
         <div id="mk-card">
           <div id="mk-card-what">send the repo link to the judges</div>
@@ -381,9 +399,9 @@
       <!-- plane 2 — the thread, held exactly as frame 02 left it -->
       <div id="mk-chat">
         <div id="mk-chat-header">
-          <div id="mk-avatar">hh</div>
+          <div id="mk-avatar">AT</div>
           <div id="mk-groupline">
-            <span class="mk-gname">hackathon halibut</span><span class="mk-gmeta">· 5 members</span>
+            <span class="mk-gname">AI Thinkerer x OpenAI hackathon</span><span class="mk-gmeta">· 5 members</span>
           </div>
         </div>
 
@@ -409,19 +427,9 @@
             <div id="mk-chip-ring"></div>
             <div id="mk-chip">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M16.6 2.9a2.1 2.1 0 0 1 3 0l1.5 1.5a2.1 2.1 0 0 1 0 3L8.8 19.7 3 21l1.3-5.8L16.6 2.9z"
-                  stroke="#F5401D"
-                  stroke-width="1.9"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M14.9 4.6l4.5 4.5"
-                  stroke="#F5401D"
-                  stroke-width="1.9"
-                  stroke-linecap="round"
-                />
+                <path d="M16.6 2.9a2.1 2.1 0 0 1 3 0l1.5 1.5a2.1 2.1 0 0 1 0 3L8.8 19.7 3 21l1.3-5.8L16.6 2.9z"
+                  stroke="#F5401D" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M14.9 4.6l4.5 4.5" stroke="#F5401D" stroke-width="1.9" stroke-linecap="round" />
               </svg>
               <div id="mk-chip-count">1</div>
             </div>
@@ -432,12 +440,7 @@
           <div id="mk-input">Message</div>
           <div id="mk-send">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M3.4 11.4 20 4.6l-6.8 16.6-2.3-7.5-7.5-2.3z"
-                stroke="#8E8E99"
-                stroke-width="1.8"
-                stroke-linejoin="round"
-              />
+              <path d="M3.4 11.4 20 4.6l-6.8 16.6-2.3-7.5-7.5-2.3z" stroke="#8E8E99" stroke-width="1.8" stroke-linejoin="round" />
             </svg>
           </div>
         </div>
@@ -449,47 +452,37 @@
       (function () {
         window.__timelines = window.__timelines || {};
 
-        var world = document.getElementById("mk-world");
+        var WORLD = "#mk-world";
+        var CARD = "#mk-card";
+        var RING = "#mk-card-ring";
         var blurNode = document.getElementById("mk-blur");
+        var world = document.getElementById("mk-world");
 
         /* ---------------------------------------------------------------
-         * ONE camera state, ONE writer. Single-wrapper composite transform:
-         *   screen = scale * worldOffset + cam  (viewport-change, T = -off*S)
-         * Every leg is a tween on this object; nothing else writes
-         * world.style.transform. Poses are baked constants, so any seek
-         * reproduces the exact mid-leg pose.
+         * SEEK LAW (learned the hard way on this project): the renderer
+         * seeks with suppressEvents, so an onUpdate callback NEVER fires —
+         * anything drawn from onUpdate renders frozen. So the camera is
+         * ONE element (#mk-world) whose x / y / scale are tweened directly
+         * by GSAP's own transform writer, every leg a baked `fromTo` with
+         * explicit numbers. Nothing derives visible state from a callback;
+         * the blur envelope rides an attr tween + zero-duration `set`s.
+         * Any seek therefore reproduces the exact mid-leg camera pose.
+         *
+         * Composite: screen = scale * (world - centre) + centre + (x, y),
+         * i.e. viewport-change's single wrapper with T = -offset * S.
          * ------------------------------------------------------------- */
-        var cam = { scale: 1, x: 0, y: 0 };
-        function applyCamera() {
-          world.style.transform =
-            "translate(" + cam.x + "px, " + cam.y + "px) scale(" + cam.scale + ")";
-        }
-        applyCamera();
-
-        /* camera-travel blur envelope (motion-blur-streak, camera carve-out).
-         * filter is switched OFF at rest so the 1:1 board plate stays
-         * pixel-exact and is never resampled. */
-        var blur = { v: 0 };
-        function writeBlur() {
-          if (blur.v <= 0.02) {
-            world.style.filter = "none";
-            blurNode.setAttribute("stdDeviation", "0 0");
-          } else {
-            blurNode.setAttribute("stdDeviation", blur.v + " 0");
-            world.style.filter = "url(#mk-streak)";
-          }
-        }
-        writeBlur();
-
         var tl = gsap.timeline({ paused: true });
-        tl.to({}, { duration: 8 }, 0); // hold the full render length
+        tl.to({}, { duration: 10 }, 0); // hold the full render length
+
+        // identity pose + sharp world at t = 0 (straight cut in from frame 02)
+        tl.set(WORLD, { x: 0, y: 0, scale: 1 }, 0);
+        tl.set(world, { filter: "none" }, 0);
+        tl.set(RING, { opacity: 0 }, 0);
 
         /* =============================================================
          * SCENE 1 (0.0–1.4s) — LEG 1: the slow dive.
-         * Straight cut in from frame 02: cam is identity at t=0, so the
-         * thread is framed exactly as frame 02 left it. The camera pushes
-         * onto Yasin's message until it commits to that one sentence.
-         * Pose is derived from the baked layout:
+         * The camera pushes onto Yasin's message until it commits to that
+         * one sentence. Pose derived from the baked layout:
          *   Yasin bubble world box  left 397, top 618, height 92
          *   bubble centre offset y  = 618 + 46 - 540 = 124
          *   S = 2.35, bubble centre lands at screen y 430
@@ -497,35 +490,23 @@
          *   cam.x = 430 puts the panel's left edge just off-frame
          * ============================================================= */
         var DIVE = { scale: 2.35, x: 430, y: -401 };
+        var EZ = "power3.inOut";
 
-        tl.to(
-          cam,
-          { scale: DIVE.scale, duration: 1.4, ease: "power3.inOut", onUpdate: applyCamera },
-          0,
-        );
-        tl.to(cam, { x: DIVE.x, duration: 1.4, ease: "power3.inOut", onUpdate: applyCamera }, 0);
-        tl.to(cam, { y: DIVE.y, duration: 1.4, ease: "power3.inOut", onUpdate: applyCamera }, 0);
+        tl.fromTo(WORLD, { scale: 1 }, { scale: DIVE.scale, duration: 1.4, ease: EZ, immediateRender: false }, 0);
+        tl.fromTo(WORLD, { x: 0 }, { x: DIVE.x, duration: 1.4, ease: EZ, immediateRender: false }, 0);
+        tl.fromTo(WORLD, { y: 0 }, { y: DIVE.y, duration: 1.4, ease: EZ, immediateRender: false }, 0);
 
         /* =============================================================
          * SCENE 2 (1.4–2.6s) — THE HINGE. The mark.
-         * The camera is dead still. The ✍️ chip is the only thing in the
+         * The camera is dead still. The chip is the only thing in the
          * whole film that moves with a spring, and the only thing moving
          * in this window. The agent writes nothing into the chat.
          * ============================================================= */
-        tl.fromTo(
-          "#mk-chip",
-          { scale: 0, opacity: 0, y: -16 },
-          { scale: 1, opacity: 1, y: 0, duration: 0.52, ease: "back.out(1.7)" },
-          1.52,
-        );
-
+        tl.fromTo("#mk-chip", { scale: 0, opacity: 0, y: -16 },
+          { scale: 1, opacity: 1, y: 0, duration: 0.52, ease: "back.out(1.7)" }, 1.52);
         /* the soft impact — one ring, no sound in this film */
-        tl.fromTo(
-          "#mk-chip-ring",
-          { scale: 0.62, opacity: 0.55 },
-          { scale: 1.34, opacity: 0, duration: 0.62, ease: "power2.out", immediateRender: false },
-          1.66,
-        );
+        tl.fromTo("#mk-chip-ring", { scale: 0.62, opacity: 0.55 },
+          { scale: 1.34, opacity: 0, duration: 0.62, ease: "power2.out", immediateRender: false }, 1.66);
 
         /* =============================================================
          * SCENE 3 (2.6–4.6s) — LEG 2: the swoop to the consequence.
@@ -538,100 +519,92 @@
          * 1920x1080 capture is NEVER on screen above 1x — it first
          * crosses the right edge at t≈3.33, already at 1.0.
          * ============================================================= */
-        var LEG_AT = 2.6;
-        var TRAVEL_FROM = DIVE.x; // 430
-        var TRAVEL_TO = -1960; // board centre offset is +1960 → T = -1960 at S=1
+        var LEG = 2.6;
+        var FROM_X = DIVE.x;
+        var TO_X = -1960; // board centre offset is +1960 → T = -1960 at S=1
+        var RAMP = FROM_X + (TO_X - FROM_X) * 0.07;
+        var BURST = FROM_X + (TO_X - FROM_X) * 0.52;
 
         // pull out of the dive first (scale + y share window and ease)
-        tl.to(cam, { scale: 1, duration: 0.5, ease: "power3.inOut", onUpdate: applyCamera }, LEG_AT);
-        tl.to(cam, { y: 0, duration: 0.5, ease: "power3.inOut", onUpdate: applyCamera }, LEG_AT);
+        tl.fromTo(WORLD, { scale: DIVE.scale }, { scale: 1, duration: 0.5, ease: EZ, immediateRender: false }, LEG);
+        tl.fromTo(WORLD, { y: DIVE.y }, { y: 0, duration: 0.5, ease: EZ, immediateRender: false }, LEG);
 
         // the lateral travel — ramp / linear burst / hard-decelerating tail
-        var RAMP_TO = TRAVEL_FROM + (TRAVEL_TO - TRAVEL_FROM) * 0.07; // 232
-        var BURST_TO = TRAVEL_FROM + (TRAVEL_TO - TRAVEL_FROM) * 0.52; // -1041.6
-        tl.to(cam, { x: RAMP_TO, duration: 0.45, ease: "power2.in", onUpdate: applyCamera }, LEG_AT);
-        tl.to(
-          cam,
-          { x: BURST_TO, duration: 0.49, ease: "none", onUpdate: applyCamera },
-          LEG_AT + 0.45,
-        );
-        tl.to(
-          cam,
-          { x: TRAVEL_TO, duration: 1.05, ease: "power4.out", onUpdate: applyCamera },
-          LEG_AT + 0.95,
-        );
+        tl.fromTo(WORLD, { x: FROM_X }, { x: RAMP, duration: 0.45, ease: "power2.in", immediateRender: false }, LEG);
+        tl.fromTo(WORLD, { x: RAMP }, { x: BURST, duration: 0.49, ease: "none", immediateRender: false }, LEG + 0.45);
+        tl.fromTo(WORLD, { x: BURST }, { x: TO_X, duration: 1.05, ease: "power4.out", immediateRender: false }, LEG + 0.95);
 
-        // blur envelope rides the same windows: 0 → peak over the ramp,
-        // held through the constant-velocity burst, peak → 0 over the tail
-        tl.to(blur, { v: 18, duration: 0.45, ease: "power2.in", onUpdate: writeBlur }, LEG_AT);
-        tl.to(
-          blur,
-          { v: 0, duration: 1.05, ease: "power4.out", onUpdate: writeBlur },
-          LEG_AT + 0.95,
-        );
+        /* blur envelope (motion-blur-streak, camera-travel carve-out).
+         * The filter is switched ON only for the leg so the 1:1 board
+         * plate is never resampled once it is at rest. The stdDeviation
+         * is an attr tween — rendered by GSAP itself, not a callback. */
+        tl.set(world, { filter: "url(#mk-streak)" }, LEG);
+        tl.fromTo(blurNode, { attr: { stdDeviation: "0 0" } },
+          { attr: { stdDeviation: "18 0" }, duration: 0.45, ease: "power2.in", immediateRender: false }, LEG);
+        tl.fromTo(blurNode, { attr: { stdDeviation: "18 0" } },
+          { attr: { stdDeviation: "0 0" }, duration: 1.05, ease: "power4.out", immediateRender: false }, LEG + 0.95);
+        tl.set(world, { filter: "none" }, 4.6);
 
         // third plane: the thread is the foreground, so it leaves faster
-        tl.to(
-          "#mk-chat",
-          { x: -240, scale: 1.06, duration: 1.1, ease: "power2.in" },
-          LEG_AT,
-        );
+        tl.fromTo("#mk-chat", { x: 0, scale: 1 },
+          { x: -240, scale: 1.06, duration: 1.1, ease: "power2.in", immediateRender: false }, LEG);
 
         /* =============================================================
-         * SCENE 4 (4.6–6.4s) — LANDING. The board rests at 1:1 and the
-         * consequence renders as element motion: the card scales up into
-         * the gap in the Yasin column, then builds row by row — what,
-         * due tag, and the quote word-for-word off the bubble above.
-         * No overshoot here; the spring was spent on the mark.
+         * SCENE 4 (4.6–6.6s) — the card, READ.
+         * The plate is at rest at 1:1 and recedes behind a cream scrim,
+         * and the card the sentence became materialises LARGE and centred
+         * over it — the same element that will dock, held at scale 3
+         * (864x312, 45% of frame, centred at 960/330). What, tag, quote:
+         * the verbatim promise, at a size you actually read. The build
+         * finishes at 5.60 and NOTHING moves until 6.60 — a full second
+         * of dead-still reading on top of the ~0.8s the build itself
+         * leaves legible. The scrim rises WITH the card (not ahead of
+         * it), so the plate is never seen dimming on its own.
+         *
+         * Docked centre is board-local (172, 396) → screen (172, 396).
+         * HERO.x = 960 - 172 = 788 ; HERO.y = 330 - 396 = -66.
          * ============================================================= */
-        tl.fromTo(
-          "#mk-card",
-          { scale: 0.86, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.55, ease: "power3.out" },
-          4.65,
-        );
-        tl.fromTo(
-          "#mk-card-ring",
-          { scale: 0.94, opacity: 0.85 },
-          { scale: 1.12, opacity: 0, duration: 0.7, ease: "power2.out", immediateRender: false },
-          4.65,
-        );
-        tl.fromTo(
-          "#mk-card-what",
-          { y: 7, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.34, ease: "power2.out" },
-          4.95,
-        );
-        tl.fromTo(
-          "#mk-card-tag",
-          { scale: 0.82, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.34, ease: "power3.out" },
-          5.22,
-        );
-        tl.fromTo(
-          "#mk-card-quote",
-          { y: 6, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.44, ease: "power2.out" },
-          5.5,
-        );
+        var HERO = { scale: 3, x: 788, y: -66 };
+
+        tl.fromTo("#mk-dim", { opacity: 0 }, { opacity: 0.58, duration: 0.7, ease: "power2.out" }, 4.5);
+
+        tl.fromTo(CARD, { x: HERO.x, y: HERO.y, scale: HERO.scale * 0.93, opacity: 0 },
+          { x: HERO.x, y: HERO.y, scale: HERO.scale, opacity: 1, duration: 0.45, ease: "power3.out" }, 4.6);
+        tl.fromTo(RING, { x: HERO.x, y: HERO.y, scale: HERO.scale * 0.96, opacity: 0.9 },
+          { x: HERO.x, y: HERO.y, scale: HERO.scale * 1.14, opacity: 0, duration: 0.7, ease: "power2.out", immediateRender: false }, 4.62);
+        tl.fromTo("#mk-card-what", { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.34, ease: "power2.out" }, 4.76);
+        tl.fromTo("#mk-card-tag", { scale: 0.84, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.34, ease: "power3.out" }, 4.98);
+        tl.fromTo("#mk-card-quote", { y: 7, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, ease: "power2.out" }, 5.18);
+        // 5.60 → 6.60 : nothing moves. The quote is simply readable.
 
         /* =============================================================
-         * SCENE 5 (6.4–8.0s) — HELD. The outline settles from `primary`
+         * SCENE 5 (6.6–8.4s) — the dock.
+         * One continuous decelerating move: the card shrinks from 3.0 to
+         * the plate's own 1.0 and travels down-left into its real slot in
+         * the Yasin column, landing on the plate's geometry at the plate's
+         * type size, outlined in `primary`. The scrim lifts as it lands,
+         * so the board is back to full brightness the moment the card
+         * becomes part of it. The vertical settle finishes last (8.4s) —
+         * the card drops into the slot rather than sliding into it.
+         * ============================================================= */
+        var DOCK = 6.6;
+
+        tl.fromTo(CARD, { x: HERO.x }, { x: 0, duration: 1.7, ease: "power3.inOut", immediateRender: false }, DOCK);
+        tl.fromTo(CARD, { scale: HERO.scale }, { scale: 1, duration: 1.7, ease: "power3.inOut", immediateRender: false }, DOCK);
+        tl.fromTo(CARD, { y: HERO.y }, { y: 0, duration: 1.8, ease: "power2.inOut", immediateRender: false }, DOCK);
+
+        // the plate lifts back to full brightness as the card lands
+        tl.fromTo("#mk-dim", { opacity: 0.58 }, { opacity: 0, duration: 1.7, ease: "power2.inOut", immediateRender: false }, DOCK);
+
+        /* =============================================================
+         * SCENE 6 (8.4–10.0s) — HELD. The outline settles from `primary`
          * to `border` and the card becomes an ordinary card among the
-         * others. Everything is motionless from 7.35s to the cut, which
-         * is the handoff frame 04 picks up: plate centred at 960/540,
-         * scale 1.0, opacity 1.
+         * others. Everything is motionless from 9.3s to the cut, which is
+         * the handoff frame 04 picks up: plate centred at 960/540,
+         * scale 1.0, opacity 1, full brightness, dead still.
          * ============================================================= */
-        tl.to(
-          "#mk-card",
-          {
-            borderColor: "#EBEBF0",
-            backgroundColor: "#FFFFFF",
-            duration: 0.9,
-            ease: "power2.inOut",
-          },
-          6.45,
-        );
+        tl.fromTo(CARD, { borderColor: "#F5401D" },
+          { borderColor: "#EBEBF0", duration: 0.85, ease: "power2.inOut", immediateRender: false }, 8.45);
 
         window.__timelines["03-mark"] = tl;
       })();

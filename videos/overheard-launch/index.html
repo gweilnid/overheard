@@ -37,7 +37,7 @@
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="48"
+      data-duration="60"
       data-width="1920"
       data-height="1080"
     >
@@ -67,7 +67,7 @@
         data-composition-id="03-mark"
         data-composition-src="compositions/frames/03-mark.html"
         data-start="13"
-        data-duration="8.5"
+        data-duration="10.5"
         data-track-index="0"
       ></div>
 
@@ -76,7 +76,7 @@
         class="scene"
         data-composition-id="04-board"
         data-composition-src="compositions/frames/04-board.html"
-        data-start="21"
+        data-start="23"
         data-duration="8"
         data-track-index="1"
       ></div>
@@ -86,29 +86,39 @@
         class="scene"
         data-composition-id="05-ask"
         data-composition-src="compositions/frames/05-ask.html"
-        data-start="29"
-        data-duration="10.5"
+        data-start="31"
+        data-duration="10"
         data-track-index="0"
       ></div>
 
       <div
-        id="el-06-point"
+        id="el-06-me"
         class="scene"
-        data-composition-id="06-point"
-        data-composition-src="compositions/frames/06-point.html"
-        data-start="39"
-        data-duration="5.5"
+        data-composition-id="06-me"
+        data-composition-src="compositions/frames/06-me.html"
+        data-start="41"
+        data-duration="10.5"
         data-track-index="1"
       ></div>
 
       <div
-        id="el-07-brand"
+        id="el-07-point"
         class="scene"
-        data-composition-id="07-brand"
-        data-composition-src="compositions/frames/07-brand.html"
-        data-start="44"
-        data-duration="4"
+        data-composition-id="07-point"
+        data-composition-src="compositions/frames/07-point.html"
+        data-start="51"
+        data-duration="5.5"
         data-track-index="0"
+      ></div>
+
+      <div
+        id="el-08-brand"
+        class="scene"
+        data-composition-id="08-brand"
+        data-composition-src="compositions/frames/08-brand.html"
+        data-start="56"
+        data-duration="4"
+        data-track-index="1"
       ></div>
 
     </div>
@@ -120,13 +130,13 @@
       (function () { var tl = window.__timelines["main"];
         tl.to("#el-01-hook", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 4);
         tl.fromTo("#el-02-group", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 4);
-        tl.to("#el-03-mark", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 21);
-        tl.fromTo("#el-04-board", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 21);
-        tl.to("#el-05-ask", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 39);
-        tl.fromTo("#el-06-point", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 39);
-        tl.to("#el-06-point", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 44);
-        tl.fromTo("#el-07-brand", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 44);
-        tl.to({}, { duration: 48 }, 0); // full-span anchor — main.duration() == composition total (Studio master duration)
+        tl.to("#el-03-mark", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 23);
+        tl.fromTo("#el-04-board", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 23);
+        tl.to("#el-06-me", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 51);
+        tl.fromTo("#el-07-point", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 51);
+        tl.to("#el-07-point", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 56);
+        tl.fromTo("#el-08-brand", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 56);
+        tl.to({}, { duration: 60 }, 0); // full-span anchor — main.duration() == composition total (Studio master duration)
       })();
     </script>
   </body>

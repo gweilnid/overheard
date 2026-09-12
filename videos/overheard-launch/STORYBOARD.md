@@ -1,8 +1,8 @@
 ---
 format: 1920x1080
-duration: 47s
+duration: 60s
 message: "You never log anything — the board fills itself from what the team already said"
-arc: Hook → The group → The mark → The board → Ask it → The point → Brand
+arc: Hook → The group → The mark → The board → Ask it → Your own list → The point → Brand
 audience: hackathon judges and the team
 mode: autonomous
 music: none
@@ -94,7 +94,7 @@ thread instead of firing as one stagger. Messages arrive from the bottom, each n
 the stack up.
 
 Scene 1 (0.0–1.6s): the Telegram group panel sits centred on the `bg` ground, ~62% of
-canvas width, phone-less (no device mockup) — group title "hackathon halibut · 5
+canvas width, phone-less (no device mockup) — group title "AI Thinkerer x OpenAI hackathon · 5
 members" and one message already resting: **Mert Gökhan — "the bot reconnected fine
 after I killed the wifi"**. Two depth layers: ground, panel.
 Scene 2 (1.6–3.2s): **Sefa — "can everyone send one message here so I can grab your
@@ -111,9 +111,9 @@ that sit.
 
 ## Frame 3 — The mark
 
-- scene: A ✍️ reaction lands on that one message; the camera leaves the chat and travels to the board, where the card it became is already waiting
-- duration: 8s
-- poster: 6s
+- scene: A ✍️ reaction lands on that one message; the camera travels to the board, and the card it became is read close-up before it docks into its column
+- duration: 10s
+- poster: 5s
 - transition_in: cut
 - status: animated
 - blueprint: camera-journey (Reproduce — sub-shape A, action roundtrip)
@@ -138,11 +138,17 @@ the mark is the only thing that moves. Nothing is written into the chat.
 Scene 3 (2.6–4.6s): the camera swoops off the message to the right, the thread sliding
 out of frame, and the board plate travels in behind it — one continuous move, motion
 blur through the middle of the leg, decelerating hard. Layered depth, three planes.
-Scene 4 (4.6–6.4s): the board lands at 1:1 and the consequence renders as element
-motion: **the card "send the repo link to the judges" scales up into the Yasin column**
-with its `primary` outline, tagged `after the demo`, the verbatim quote reading in
-`text-light` beneath it — the same words the bubble just held.
-Scene 5 (6.4–8.0s): **held.** The outline fades from `primary` to `border` as the card
+Scene 4 (4.6–6.6s): the board lands at 1:1, and the card the sentence became
+**materialises large and centred over it** — big enough to read at a glance: what
+(`send the repo link to the judges`), the `after the demo` tag, and the verbatim quote
+underneath. The plate dims behind it. Hold it there long enough to actually be read;
+this is the payoff of the mark and it must not be squinted at. Centred hero, ~45% of
+frame, two depth layers.
+Scene 5 (6.6–8.4s): the card **shrinks and travels down into its real slot in the Yasin
+column**, landing on the plate's own geometry at the plate's own type size, outline in
+`primary`. One continuous move, decelerating; the plate lifts back to full brightness as
+it lands. This is the beat that says the card is not an overlay — it lives on the board.
+Scene 6 (8.4–10.0s): **held.** The outline fades from `primary` to `border` as the card
 becomes an ordinary card among the others, and the frame stops entirely. Nothing moves
 into the cut.
 
@@ -213,7 +219,49 @@ through and greys**, its owner's outstanding count dropping by one — the write
 happening on the real screen.
 Scene 6 (8.6–10.0s): held. Caret blinks in the empty input; the board sits changed.
 
-## Frame 6 — The point
+## Frame 6 — Your own list
+
+- scene: A private DM to the bot; /me returns everything you owe, in your own words, and one tap closes it
+- duration: 10s
+- poster: 7s
+- transition_in: cut
+- status: outline
+- blueprint: prompt-type-submit-generate (Adapt)
+- focal: the bot's digest message
+- roles: recreated Telegram DM = cutout · ground = background
+- asset_candidates: none
+- src: compositions/frames/06-me.html
+
+The board answers the room. This answers you. The same agent that stayed silent in
+the group will talk in a direct message, and what it sends back is not a dashboard
+link — it is the list of what you personally owe, each line carrying the sentence you
+actually said. Item 4 is the promise this film has been following since Frame 2, now
+sitting in its owner's pocket. Then one tap closes it, from Telegram, without opening
+anything.
+
+Adapt: keep the ask → answer loop, but the ask is a slash command rather than a typed
+question, and the answer is a real bot message with an inline keyboard rather than a
+streamed one. The second beat is a **button press**, not a second prompt.
+
+Scene 1 (0.0–1.6s): a private Telegram chat, ~46% of canvas, centred on the `bg`
+ground. The header is the giveaway and must read clearly: **Overheard · bot**, not a
+group — this is the one place the agent is allowed to speak. Empty thread, composer
+resting.
+Scene 2 (1.6–2.8s): **`/me`** types into the composer at human cadence and sends; the
+command chip settles right-aligned as an outgoing message. Two words, no ceremony.
+Scene 3 (2.8–5.2s): the bot's reply arrives as one message and builds line by line —
+header **"You're on the hook for 5 things:"**, then the five numbered items, each with
+its due and its verbatim quote indented beneath in `text-light`. The list arrives in
+reading order, not as one dump.
+Scene 4 (5.2–6.6s): the inline keyboard appears under the message — five stacked
+**`Done: N`** buttons, Telegram's own button chrome.
+Scene 5 (6.6–8.4s): a press lands on **`Done: 1`**; the button depresses, a **`Done ✍️`**
+toast slides in at the top, and the message **edits in place** — the header re-reads
+**"You're on the hook for 4 things:"** and item 1 leaves, the rest renumbering up.
+Scene 6 (8.4–10.0s): held. The edited message sits still; only the composer caret
+blinks.
+
+## Frame 7 — The point
 
 - scene: The chat returns, scrolled through the whole session — every agent message count still zero
 - duration: 5s
@@ -224,7 +272,7 @@ Scene 6 (8.6–10.0s): held. Caret blinks in the empty input; the board sits cha
 - focal: the counter pair — 1 reaction / 0 messages
 - roles: recreated thread = background (dimmed ~40%, unreadable, present only as texture) · counter pair = cutout
 - asset_candidates: none
-- src: compositions/frames/06-point.html
+- src: compositions/frames/07-point.html
 
 Pay off the hook with the restraint. Everything just shown came out of a group the
 agent never once posted into. Say the number: one reaction, zero messages.
@@ -242,7 +290,7 @@ by a single mask-up — no count-up, no stagger; the restraint is the content.
 Scene 3 (3.2–5.0s): held, completely still. A hairline rule draws once beneath the
 pair and stops. Nothing else moves.
 
-## Frame 7 — Brand
+## Frame 8 — Brand
 
 - scene: The wordmark settles with the one line that describes the product
 - duration: 4s
@@ -253,7 +301,7 @@ pair and stops. Nothing else moves.
 - focal: the Overheard wordmark
 - roles: none (typographic lockup)
 - asset_candidates: none
-- src: compositions/frames/07-brand.html
+- src: compositions/frames/08-brand.html
 
 Close quietly. The product's own brand block already says it better than a tagline
 would: promises people made to each other, never typed into anything.
