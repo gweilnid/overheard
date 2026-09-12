@@ -15,7 +15,7 @@ those commitments, live. Then someone DMs the bot `/me`, gets their personal lis
 taps **Done**, and the board changes in front of the audience.
 
 Next to the board sits a CopilotKit chat that can see the whole group state, so
-you can ask it the questions you cannot ask in Telegram — *"what is Ondra on the
+you can ask it the questions you cannot ask in Telegram — *"what is Mehmet on the
 hook for?"* — and close or reassign things from the chat.
 
 That is the whole product. Everything else is cut.
@@ -122,7 +122,7 @@ extract(input: {
 ```
 
 **It returns a diff, never a fresh list.** That one decision handles all three cases:
-"yeah I'll do it" binds to what was discussed 5 messages earlier; "actually Ondra's
+"yeah I'll do it" binds to what was discussed 5 messages earlier; "actually Gokhan's
 taking that" rewrites the owner; "done, deployed" closes it.
 
 **Owner assignment:** the roster goes into the prompt and the model must return an
@@ -307,7 +307,7 @@ Every file you own has a `TODO SEAT n` marker in it saying what to replace.
 - **The store empties on every web restart.** `curl -X POST localhost:3000/api/seed`
   to refill.
 - **NEVER leave seeded data in the store during a live run.** The fixture's fake
-  people (Petr, Jana, Ondra) land in the same extraction window as real messages,
+  fixture messages land in the same extraction window as real ones,
   and the model hands a real person's promise to a fixture name — it did exactly
   that to a real message in our group. `curl -X POST localhost:3000/api/reset`
   clears everything before you go live.
