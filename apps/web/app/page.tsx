@@ -110,6 +110,61 @@ export default function Board() {
     },
   })
 
+  async function updateCommitment(id: string, update: Record<string, string | null>) {
+    const res = await fetch(`/api/commitments/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(update),
+    })
+    await load()
+    return res
+  }
+
+  useCopilotAction({
+    name: 'reassignCommitment',
+    description: 'Assign an open commitment to a person in the roster, using that person\'s exact id.',
+    parameters: [
+      { name: 'id', type: 'string', description: 'The commitment id', required: true },
+      { name: 'ownerId', type: 'string', description: 'The new owner id from the people roster', required: true },
+    ],
+    handler: async ({ id, ownerId }) => {
+      const res = await updateCommitment(id, { ownerId })
+      return res.ok ? 'Reassigned.' : 'Could not reassign that commitment.'
+    },
+  })
+
+  useCopilotAction({
+    name: 'changeDueDate',
+    description: 'Change a commitment\'s due date using the wording the team agreed on.',
+    parameters: [
+      { name: 'id', type: 'string', description: 'The commitment id', required: true },
+      { name: 'due', type: 'string', description: 'The new due-date wording, for example "Friday afternoon"', required: true },
+    ],
+    handler: async ({ id, due }) => {
+      const res = await updateCommitment(id, { due })
+      return res.ok ? 'Due date updated.' : 'Could not update that due date.'
+    },
+  })
+
+  useCopilotAction({
+    name: 'editCommitment',
+    description: 'Correct the wording of a commitment or change who it is for. Do not use this to change its owner or due date.',
+    parameters: [
+      { name: 'id', type: 'string', description: 'The commitment id', required: true },
+      { name: 'what', type: 'string', description: 'A short corrected description', required: false },
+      { name: 'toWhom', type: 'string', description: 'Who the commitment is for', required: false },
+    ],
+    handler: async ({ id, what, toWhom }) => {
+      const update: Record<string, string | null> = {}
+      if (what) update.what = what
+      if (toWhom) update.toWhom = toWhom
+      if (!Object.keys(update).length) return 'Provide a description or recipient to edit.'
+
+      const res = await updateCommitment(id, update)
+      return res.ok ? 'Commitment updated.' : 'Could not update that commitment.'
+    },
+  })
+
   const open = commitments.filter(c => c.status === 'open').length
   const meetings = commitments.filter(c => c.kind === 'meeting')
   const promises = commitments.filter(c => c.kind !== 'meeting')
