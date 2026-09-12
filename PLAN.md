@@ -306,6 +306,11 @@ Every file you own has a `TODO SEAT n` marker in it saying what to replace.
   stop dev, `rm -rf apps/web/.next`, start dev again.
 - **The store empties on every web restart.** `curl -X POST localhost:3000/api/seed`
   to refill.
+- **NEVER leave seeded data in the store during a live run.** The fixture's fake
+  people (Petr, Jana, Ondra) land in the same extraction window as real messages,
+  and the model hands a real person's promise to a fixture name — it did exactly
+  that to a real message in our group. `curl -X POST localhost:3000/api/reset`
+  clears everything before you go live.
 - **`curl -s localhost:3000/api/debug`** shows people, commitments and every raw
   message ingested. When a message does not become a card, look here first — it
   tells you whether it was even received.
