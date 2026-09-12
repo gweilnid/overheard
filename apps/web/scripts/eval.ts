@@ -21,14 +21,18 @@ try {
 const { extract } = await import('../lib/extract')
 const fixture = JSON.parse(readFileSync(join(root, 'fixtures/demo.json'), 'utf8'))
 
-console.log(`model: ${process.env.OPENROUTER_MODEL ?? 'anthropic/claude-sonnet-4.5'}`)
+console.log(`model: ${process.env.OPENROUTER_MODEL ?? 'openai/gpt-4.1-mini'}`)
 console.log(`${fixture.messages.length} messages, ${fixture.roster.length} people\n`)
 
-const diff = await extract({
-  messages: fixture.messages,
-  open: [],
-  roster: fixture.roster,
-})
+let diff
+try {
+  diff = await extract({ messages: fixture.messages, open: [], roster: fixture.roster })
+} catch (e) {
+  console.error('\nextract() threw:', (e as Error).message)
+  console.error('Validation is strict — it rejects the WHOLE diff if any quote, owner')
+  console.error('or commitment id does not check out. Tighten the prompt, not the check.')
+  process.exit(1)
+}
 
 console.log('--- CREATED ---')
 if (!diff.create.length) console.log('  (nothing)')

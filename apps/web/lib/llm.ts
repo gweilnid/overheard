@@ -1,17 +1,11 @@
-// OpenRouter client. Everything that talks to a model goes through here.
+// OpenRouter client for SEAT 5's CopilotKit runtime (OpenAIAdapter takes a plain
+// OpenAI client). The extractor does NOT use this — lib/extract.ts calls
+// OpenRouter over fetch directly and validates with Zod.
 import OpenAI from 'openai'
 
-export const MODEL = process.env.OPENROUTER_MODEL ?? 'anthropic/claude-sonnet-4.5'
+export const MODEL = process.env.OPENROUTER_MODEL ?? 'openai/gpt-4.1-mini'
 
 export const llm = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
   apiKey: process.env.OPENROUTER_API_KEY,
 })
-
-// Structured-output support on OpenRouter is per PROVIDER, not per model — the
-// same model is served by several providers and only some honour json_schema.
-// Without this, requests get silently routed to one that ignores the schema and
-// you get prose back instead of JSON.
-export const REQUIRE_STRUCTURED = {
-  provider: { require_parameters: true },
-} as const
