@@ -11,6 +11,9 @@
     "typecheck": "tsc --noEmit --incremental false"
   },
   "dependencies": {
+    "@copilotkit/react-core": "^1.71.1",
+    "@copilotkit/react-ui": "^1.71.1",
+    "@copilotkit/runtime": "^1.71.1",
     "@overheard/types": "*",
     "next": "^15.5.0",
     "openai": "^4.77.0",

@@ -1,6 +1,7 @@
 'use client'
 // SEAT 4 owns this file.
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { useCopilotReadable, useCopilotAction } from '@copilotkit/react-core'
 import type { Commitment, Person } from '@overheard/types'
 
 const POLL_MS = 2000
@@ -14,16 +15,48 @@ export default function Board() {
   const [people, setPeople] = useState<Person[]>([])
   const [live, setLive] = useState(false)
 
+  const load = useCallback(() =>
+    fetch('/api/commitments')
+      .then(r => r.json())
+      .then(d => { setCommitments(d.commitments); setPeople(d.people); setLive(true) })
+      .catch(() => setLive(false)), [])
+
   useEffect(() => {
-    const load = () =>
-      fetch('/api/commitments')
-        .then(r => r.json())
-        .then(d => { setCommitments(d.commitments); setPeople(d.people); setLive(true) })
-        .catch(() => setLive(false))
     load()
     const t = setInterval(load, POLL_MS)
     return () => clearInterval(t)
-  }, [])
+  }, [load])
+
+  // Everything the chat can see. Ids are included so closeCommitment can be used.
+  useCopilotReadable({
+    description:
+      'Every commitment and meeting overheard in the group. kind "commitment" means ' +
+      'one person owes something; kind "meeting" is a group event with a time in ' +
+      '`when`. `quote` is the verbatim sentence it came from.',
+    value: commitments,
+  })
+
+  useCopilotReadable({
+    description: 'People in the group, by id',
+    value: people,
+  })
+
+  useCopilotAction({
+    name: 'closeCommitment',
+    description: 'Mark a commitment or meeting as done, by its id.',
+    parameters: [
+      { name: 'id', type: 'string', description: 'The commitment id', required: true },
+    ],
+    handler: async ({ id }) => {
+      const res = await fetch('/api/close', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      await load()
+      return res.ok ? 'Closed.' : 'Could not close that one.'
+    },
+  })
 
   const open = commitments.filter(c => c.status === 'open').length
   const meetings = commitments.filter(c => c.kind === 'meeting')
