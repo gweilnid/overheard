@@ -18,14 +18,6 @@ function dueBucket(due: string | null): 'today' | 'tomorrow' | 'this week' | 'la
   return 'later'
 }
 
-// A stable hue per person, so at four metres you find your own column by colour
-// before you have read the name.
-function personHue(id: string): string {
-  let h = 0
-  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) % 360
-  return `hsl(${h} 62% 68%)`
-}
-
 function initials(name: string) {
   return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
@@ -130,159 +122,173 @@ export default function Board() {
   return (
     <main>
       <style>{`
+        /* A ledger, not a dashboard. The product is a written record of things people
+           said out loud, so the page is ruled lines and marginal annotation — the
+           commitment is the entry, the sentence underneath is the evidence. */
         :root {
-          color-scheme: dark;
-          --ground:#0b0b0d; --surface:#141417; --line:#242429;
-          --ink:#f4f3f1; --soft:#9a98a2; --faint:#6b6974;
-          --amber:#e8b757; --amber-bg:#2a2317;
-          --blue:#7fb3e8;  --blue-bg:#16212e;
-          --green:#62c48e; --green-bg:#152219;
+          --paper:#eae9e3; --band:#e2e1da; --ink:#14141a; --ink2:#55555e; --ink3:#8a8a92;
+          --rule:#c7c6bd; --hair:#d5d4cc; --pen:#b3231c; --ledger:#2f6b4c;
         }
-        main { padding:38px 44px 80px; font-family:Archivo,ui-sans-serif,system-ui,sans-serif; }
+        @media (prefers-color-scheme: dark) {
+          :root:not([data-theme="light"]) {
+            --paper:#0f0f12; --band:#16161a; --ink:#edece6; --ink2:#a0a0a8; --ink3:#6e6e77;
+            --rule:#2b2b31; --hair:#212126; --pen:#e8615a; --ledger:#6fc299;
+          }
+        }
+        :root[data-theme="dark"] {
+          --paper:#0f0f12; --band:#16161a; --ink:#edece6; --ink2:#a0a0a8; --ink3:#6e6e77;
+          --rule:#2b2b31; --hair:#212126; --pen:#e8615a; --ledger:#6fc299;
+        }
 
-        /* The Copilot launcher floats over the top-right corner; keep the tally clear of it. */
-        .top { display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
-               flex-wrap:wrap; padding-right:86px; }
-        h1 { font-size:46px; font-weight:700; letter-spacing:-.03em; margin:0; line-height:1; }
-        .sub { color:var(--faint); margin:10px 0 0; font-size:18px; font-weight:500; }
-        .tally { display:flex; gap:30px; align-items:baseline; }
-        .stat { text-align:right; }
-        .stat b { display:block; font-size:38px; font-weight:700; letter-spacing:-.02em;
-                  font-variant-numeric:tabular-nums; line-height:1; }
-        .stat span { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:11px;
-                     letter-spacing:.16em; text-transform:uppercase; color:var(--faint); }
-        .stat.live b { color:var(--amber); }
-        .dot { width:8px; height:8px; border-radius:50%; background:var(--green); display:inline-block;
-               margin-right:7px; vertical-align:middle; box-shadow:0 0 0 4px rgba(98,196,142,.16); }
-        .dot.off { background:#4a4852; box-shadow:none; }
+        body { background:var(--paper); }
+        main { background:var(--paper); color:var(--ink); min-height:100vh;
+               font-family:Archivo,ui-sans-serif,system-ui,sans-serif;
+               padding:0 0 90px; }
 
-        hr.rule { border:0; border-top:1px solid var(--line); margin:30px 0 34px; }
+        /* masthead ------------------------------------------------------------ */
+        .head { border-bottom:2px solid var(--ink); padding:26px 44px 16px;
+                display:flex; align-items:flex-end; justify-content:space-between;
+                gap:28px; flex-wrap:wrap; }
+        .title { display:flex; align-items:baseline; gap:16px; }
+        h1 { font-size:27px; font-weight:700; letter-spacing:-.02em; margin:0; }
+        .rubric { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:11px;
+                  letter-spacing:.14em; text-transform:uppercase; color:var(--ink3); }
+        .figs { display:flex; gap:26px; font-family:"JetBrains Mono",monospace;
+                font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+                color:var(--ink3); padding-right:76px; }
+        .figs b { font-family:Archivo,sans-serif; font-size:22px; font-weight:600;
+                  letter-spacing:-.01em; color:var(--ink); display:block;
+                  font-variant-numeric:tabular-nums; margin-bottom:1px; }
+        .figs .on b { color:var(--pen); }
 
-        .cols { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:34px 30px; align-items:start; }
-        .who { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
-        .av { width:36px; height:36px; border-radius:50%; display:grid; place-items:center;
-              font-size:13px; font-weight:700; letter-spacing:.03em; flex:none;
-              background:var(--surface); border:1.5px solid currentColor; }
-        .who h2 { font-size:21px; font-weight:600; margin:0; letter-spacing:-.01em; color:var(--ink); }
-        .who .n { font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.13em;
-                  text-transform:uppercase; color:var(--faint); margin-top:3px; }
+        /* ledger --------------------------------------------------------------- */
+        .sheet { columns:2; column-gap:0; column-rule:1px solid var(--rule); }
+        @media (max-width:1100px) { .sheet { columns:1; } }
 
-        .card { padding:17px 19px 18px; border-radius:12px; background:var(--surface);
-                border:1px solid var(--line); margin-bottom:12px; }
-        .card.meet { border-color:#223244; background:linear-gradient(var(--blue-bg),var(--surface) 72%); }
-        .card.done { background:transparent; border-style:dashed; }
-        .card.done .what { color:var(--faint); text-decoration:line-through; text-decoration-thickness:1.5px; }
-        .card.done .quote { opacity:.45; }
+        .party { break-inside:avoid-column; padding:0 0 4px; }
+        .party > h2 {
+          font-family:"JetBrains Mono",monospace; font-size:11px; font-weight:500;
+          letter-spacing:.2em; text-transform:uppercase; color:var(--ink);
+          margin:0; padding:13px 44px 11px; background:var(--band);
+          border-bottom:1px solid var(--rule); display:flex; justify-content:space-between;
+        }
+        .party > h2 em { font-style:normal; color:var(--ink3); letter-spacing:.12em; }
 
-        .what { font-size:23px; font-weight:600; line-height:1.22; letter-spacing:-.015em; }
-        .meta { display:flex; gap:7px; margin-top:11px; flex-wrap:wrap; }
-        .pill { font-family:"JetBrains Mono",monospace; font-size:11.5px; letter-spacing:.04em;
-                padding:4px 9px; border-radius:6px; background:#1e1e23; color:var(--soft); }
-        .pill.due  { background:var(--amber-bg); color:var(--amber); }
-        .pill.when { background:var(--blue-bg);  color:var(--blue); }
-        .pill.ok   { background:var(--green-bg); color:var(--green); }
+        .entry { display:grid; grid-template-columns:1fr; gap:6px;
+                 padding:15px 44px 16px; border-bottom:1px solid var(--hair); }
+        .entry:last-child { border-bottom:1px solid var(--rule); }
 
-        .quote { font-family:Newsreader,Georgia,serif; font-style:italic; font-size:18px;
-                 line-height:1.4; color:var(--soft); margin-top:13px; padding-left:14px;
-                 border-left:2px solid var(--line); }
+        .what { font-size:21px; font-weight:600; line-height:1.24; letter-spacing:-.015em;
+                text-wrap:balance; }
+        .said { font-family:Fraunces,Georgia,serif; font-style:italic;
+                font-optical-sizing:auto; font-size:17.5px; line-height:1.38;
+                color:var(--ink2); }
+        .said::before { content:'\\201C'; } .said::after { content:'\\201D'; }
 
-        .empty { color:var(--faint); font-size:21px; line-height:1.65; margin-top:46px; font-weight:500; }
-        .empty code { font-family:"JetBrains Mono",monospace; font-size:17px; color:var(--amber);
-                      background:var(--amber-bg); padding:3px 9px; border-radius:6px; }
+        .mark { font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.1em;
+                text-transform:uppercase; display:flex; gap:16px; flex-wrap:wrap;
+                color:var(--ink3); }
+        .mark .due { color:var(--pen); }
+        .mark .to  { color:var(--ink3); }
 
-        @media (max-width:560px) {
-          main { padding:26px 18px 64px; }
-          h1 { font-size:34px; } .stat b { font-size:30px; }
-          .top { padding-right:0; } .tally { gap:22px; }
-          .cols { grid-template-columns:1fr; gap:28px; }
+        /* struck through, the way you would cross a line out of a real ledger */
+        .entry.done .what { color:var(--ink3); text-decoration:line-through;
+                            text-decoration-color:var(--pen); text-decoration-thickness:2px; }
+        .entry.done .said { color:var(--ink3); opacity:.6; }
+        .entry.done .mark { color:var(--ledger); }
+
+        /* meetings read as struck-in headings, not as somebody's debt */
+        .party.diary > h2 { color:var(--ink); }
+        /* Fixed, not auto: each entry is its own grid, so an auto column makes every
+           row start the title at a different x and the left edge goes ragged. */
+        .diary .entry { grid-template-columns:152px 1fr; gap:2px 16px; align-items:baseline; }
+        .diary .when { font-family:"JetBrains Mono",monospace; font-size:12px;
+                       letter-spacing:.06em; color:var(--pen); white-space:nowrap;
+                       font-variant-numeric:tabular-nums; }
+        .diary .what { grid-column:2; font-size:19px; }
+        .diary .said { grid-column:2; }
+
+        .idle { padding:80px 44px; max-width:44ch; }
+        .idle p { font-family:Fraunces,Georgia,serif; font-style:italic; font-size:24px;
+                  line-height:1.45; color:var(--ink2); margin:0 0 18px; }
+        .idle code { font-family:"JetBrains Mono",monospace; font-style:normal;
+                     font-size:15px; color:var(--pen); }
+
+        @media (max-width:620px) {
+          .head { padding:20px 20px 14px; } .figs { padding-right:0; gap:20px; }
+          .party > h2, .entry, .idle { padding-left:20px; padding-right:20px; }
+          .what { font-size:19px; } .said { font-size:16.5px; }
+          .diary .entry { grid-template-columns:1fr; }
+          .diary .what, .diary .said { grid-column:1; }
         }
       `}</style>
 
-      <div className="top">
-        <div>
+      <div className="head">
+        <div className="title">
           <h1>Overheard</h1>
-          <p className="sub">Promises people made to each other, never typed into anything.</p>
+          <span className="rubric">promises, as spoken</span>
         </div>
-        <div className="tally">
-          <div className="stat live"><b>{open}</b><span>open</span></div>
-          <div className="stat"><b>{commitments.length - open}</b><span>done</span></div>
-          <div className="stat"><b><span className={live ? 'dot' : 'dot off'} />{people.length}</b><span>listening</span></div>
+        <div className="figs">
+          <div className="on"><b>{open}</b>outstanding</div>
+          <div><b>{commitments.length - open}</b>settled</div>
+          <div><b>{people.length}</b>{live ? 'listening' : 'offline'}</div>
         </div>
       </div>
 
-      <hr className="rule" />
-
       {!anything ? (
-        <p className="empty">
-          Listening.<br />
-          Say something in the group you intend to do — <code>I&apos;ll send the deck tomorrow</code>
-        </p>
+        <div className="idle">
+          <p>Nothing said yet that anyone has to answer for.</p>
+          <p className="rubric" style={{ fontFamily: 'JetBrains Mono, monospace', fontStyle: 'normal', fontSize: 13 }}>
+            Say something in the group you intend to do — <code>I&apos;ll send the deck tomorrow</code>
+          </p>
+        </div>
       ) : (
-        <div className="cols">
+        <div className="sheet">
           {meetings.length > 0 && (
-            <section key="__meetings">
-              <div className="who" style={{ color: 'var(--blue)' }}>
-                <div className="av">◷</div>
-                <div>
-                  <h2>Meetings</h2>
-                  <div className="n">{meetings.filter(c => c.status === 'open').length} agreed</div>
-                </div>
-              </div>
+            <section className="party diary" key="__diary">
+              <h2>Diary <em>{meetings.filter(c => c.status === 'open').length} agreed</em></h2>
               {meetings.map(c => (
-                <article className={c.status === 'done' ? 'card meet done' : 'card meet'} key={c.id}>
+                <div className={c.status === 'done' ? 'entry done' : 'entry'} key={c.id}>
+                  <div className="when">{c.when}</div>
                   <div className="what">{c.what}</div>
-                  <div className="meta">{c.when && <span className="pill when">{c.when}</span>}</div>
-                  <div className="quote">{c.quote}</div>
-                </article>
-              ))}
-            </section>
-          )}
-
-          {orphans.length > 0 && (
-            <section key="__orphans">
-              <div className="who" style={{ color: 'var(--faint)' }}>
-                <div className="av">?</div>
-                <div>
-                  <h2>Unassigned</h2>
-                  <div className="n">{orphans.length} open</div>
+                  <div className="said">{c.quote}</div>
                 </div>
-              </div>
-              {orphans.map(c => (
-                <article className={c.status === 'done' ? 'card done' : 'card'} key={c.id}>
-                  <div className="what">{c.what}</div>
-                  <div className="meta">{c.due && <span className="pill due">{c.due}</span>}</div>
-                  <div className="quote">{c.quote}</div>
-                </article>
               ))}
             </section>
           )}
 
           {withCommitments.map(p => {
             const mine = promises.filter(c => c.ownerId === p.id)
-            const openCount = mine.filter(c => c.status === 'open').length
             return (
-              <section key={p.id}>
-                <div className="who" style={{ color: personHue(p.id) }}>
-                  <div className="av">{initials(p.name)}</div>
-                  <div>
-                    <h2>{p.name}</h2>
-                    <div className="n">{openCount} open</div>
-                  </div>
-                </div>
+              <section className="party" key={p.id}>
+                <h2>{p.name} <em>{mine.filter(c => c.status === 'open').length} outstanding</em></h2>
                 {mine.map(c => (
-                  <article className={c.status === 'done' ? 'card done' : 'card'} key={c.id}>
+                  <div className={c.status === 'done' ? 'entry done' : 'entry'} key={c.id}>
                     <div className="what">{c.what}</div>
-                    <div className="meta">
-                      {c.due && <span className="pill due">{c.due}</span>}
-                      {c.toWhom && <span className="pill">to {c.toWhom}</span>}
-                      {c.status === 'done' && <span className="pill ok">done</span>}
+                    <div className="said">{c.quote}</div>
+                    <div className="mark">
+                      {c.due && <span className="due">{c.due}</span>}
+                      {c.toWhom && <span className="to">to {c.toWhom}</span>}
+                      {c.status === 'done' && <span>settled</span>}
                     </div>
-                    <div className="quote">{c.quote}</div>
-                  </article>
+                  </div>
                 ))}
               </section>
             )
           })}
+
+          {orphans.length > 0 && (
+            <section className="party" key="__orphans">
+              <h2>Unattributed <em>{orphans.length} outstanding</em></h2>
+              {orphans.map(c => (
+                <div className={c.status === 'done' ? 'entry done' : 'entry'} key={c.id}>
+                  <div className="what">{c.what}</div>
+                  <div className="said">{c.quote}</div>
+                  <div className="mark">{c.due && <span className="due">{c.due}</span>}</div>
+                </div>
+              ))}
+            </section>
+          )}
         </div>
       )}
     </main>
