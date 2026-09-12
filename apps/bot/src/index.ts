@@ -1,6 +1,6 @@
 // SEAT 1 owns this file.
-import { Bot } from 'grammy'
-import type { IngestMessage } from '@overheard/types'
+import { Bot, InlineKeyboard } from 'grammy'
+import type { Commitment, IngestMessage } from '@overheard/types'
 
 const WEB_URL = process.env.WEB_URL ?? 'http://localhost:3000'
 const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN!)
@@ -14,9 +14,10 @@ const MARK = '✍️'
 // on the next window instead of being lost forever.
 const marked = new Set<number>()
 
+// ---------------------------------------------------------------- group ingest
+
 bot.on('message:text', async ctx => {
-  // Private chats are the DM digest, not group ingest.
-  if (ctx.chat.type === 'private') return
+  if (ctx.chat.type === 'private') return   // private chats are the digest below
 
   const msg: IngestMessage = {
     messageId: ctx.message.message_id,
@@ -54,9 +55,76 @@ bot.on('message:text', async ctx => {
   }
 })
 
-// TODO SEAT 1, stretch after the T+1:40 gate:
-//   bot.command('me')  -> that person's open commitments + one inline button each
-//   bot.on('callback_query:data') -> POST /api/close
+// ------------------------------------------------------------------ DM digest
+
+async function mine(userId: string): Promise<Commitment[]> {
+  const res = await fetch(`${WEB_URL}/api/mine?userId=${encodeURIComponent(userId)}`)
+  if (!res.ok) throw new Error(`mine returned ${res.status}`)
+  return ((await res.json()) as { commitments: Commitment[] }).commitments
+}
+
+function render(list: Commitment[]) {
+  if (!list.length) {
+    return { text: 'Nothing on you right now.', keyboard: new InlineKeyboard() }
+  }
+
+  const lines = list.map((c, i) => {
+    const due = c.due ? ` — ${c.due}` : ''
+    const to = c.toWhom ? ` (to ${c.toWhom})` : ''
+    return `${i + 1}. ${c.what}${due}${to}\n   “${c.quote}”`
+  })
+
+  const keyboard = new InlineKeyboard()
+  list.forEach((c, i) => keyboard.text(`Done: ${i + 1}`, `done:${c.id}`).row())
+
+  const n = list.length
+  return {
+    text: `You're on the hook for ${n} thing${n === 1 ? '' : 's'}:\n\n${lines.join('\n\n')}`,
+    keyboard,
+  }
+}
+
+async function showDigest(ctx: Parameters<Parameters<typeof bot.command>[1]>[0]) {
+  try {
+    const { text, keyboard } = render(await mine(String(ctx.from!.id)))
+    await ctx.reply(text, { reply_markup: keyboard })
+  } catch (err) {
+    console.error('[digest]', (err as Error).message)
+    await ctx.reply('Could not reach the board just now.')
+  }
+}
+
+bot.command('start', async ctx => {
+  if (ctx.chat.type !== 'private') return
+  await ctx.reply("I listen in the group and keep track of what you promise. Send /me any time.")
+  await showDigest(ctx)
+})
+
+bot.command('me', async ctx => {
+  if (ctx.chat.type !== 'private') return   // never speak in the group
+  await showDigest(ctx)
+})
+
+bot.on('callback_query:data', async ctx => {
+  const [action, id] = ctx.callbackQuery.data.split(':')
+  if (action !== 'done') return ctx.answerCallbackQuery()
+
+  try {
+    await fetch(`${WEB_URL}/api/close`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id }),
+    })
+    await ctx.answerCallbackQuery({ text: 'Done ✍️' })
+
+    const { text, keyboard } = render(await mine(String(ctx.from.id)))
+    await ctx.editMessageText(text, { reply_markup: keyboard })
+    console.log(`[done] ${id} by ${ctx.from.first_name}`)
+  } catch (err) {
+    console.error('[done]', (err as Error).message)
+    await ctx.answerCallbackQuery({ text: 'Could not update' })
+  }
+})
 
 // NEVER call ctx.reply() in a group chat. That is the entire product.
 
