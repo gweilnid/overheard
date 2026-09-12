@@ -137,26 +137,44 @@ problem and we have two hours.
 2. **Confidence threshold 0.7.** Only create above it, only react above it. A quiet
    agent that occasionally stays silent beats a chatty one that is wrong.
 
-### LLM call
+### LLM call — OpenRouter
 
-Default implementation is Claude. Keep it behind the `extract()` signature above so it
-can be swapped in one file if the credits are somewhere else.
+Everything that talks to a model goes through `lib/llm.ts`. The plumbing is
+already written and builds; Seat 2 only writes the prompt.
 
 ```ts
-import Anthropic from '@anthropic-ai/sdk'
-import { z } from 'zod'
-import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
+import OpenAI from 'openai'
 
-const res = await client.messages.parse({
-  model: 'claude-opus-5',
-  max_tokens: 16000,
-  messages: [{ role: 'user', content: prompt }],
-  output_config: { format: zodOutputFormat(DiffSchema) },
+export const llm = new OpenAI({
+  baseURL: 'https://openrouter.ai/api/v1',
+  apiKey: process.env.OPENROUTER_API_KEY,
 })
-const diff = res.parsed_output   // null if parsing failed — guard it
 ```
 
-`ANTHROPIC_API_KEY` in `apps/web/.env.local`.
+The diff comes back through `response_format: { type: 'json_schema', ... }` with
+`strict: true`. The schema is already written in `lib/extract.ts`.
+
+**The OpenRouter trap:** structured-output support is per **provider**, not per
+model. The same model is served by several providers and only some honour
+`json_schema` — get routed to one that doesn't and you silently receive prose
+instead of JSON. So every call sends:
+
+```ts
+provider: { require_parameters: true }
+```
+
+That is in `lib/llm.ts` as `REQUIRE_STRUCTURED`. Do not drop it.
+
+Model is `OPENROUTER_MODEL`, defaulting to `anthropic/claude-sonnet-4.5`. Swap it
+in `.env.local` — no code change. Check a model actually supports structured
+outputs at `openrouter.ai/models?supported_parameters=structured_outputs`.
+
+Two schema details worth knowing before they confuse you:
+
+- `strict: true` means **every** property must be listed in `required`. Optional
+  fields are therefore typed `['string', 'null']`.
+- On `update`, `null` means "leave this field unchanged". `extract()` strips the
+  nulls before returning, so the rest of the code never sees them.
 
 ---
 
@@ -164,6 +182,11 @@ const diff = res.parsed_output   // null if parsing failed — guard it
 
 ### Seat 1 — Bot (`apps/bot`)
 Unblocked at T+0:20. Roughly 70 lines.
+
+**There is one bot token and Telegram allows one long-polling connection per
+token.** Only one person runs `npm run bot` at a time — Seat 1 while building,
+then it moves to the demo laptop. Two at once and one of you silently stops
+receiving messages with a 409.
 - [ ] grammY long polling (`bot.start()`), **not** webhooks
 - [ ] `bot.on('message:text')` → build `IngestMessage` → `POST {WEB_URL}/api/ingest`
 - [ ] For each id in the `reactTo` response: `ctx.api.setMessageReaction(chatId, id, [{type:'emoji', emoji:'✅'}])`
@@ -208,8 +231,9 @@ First 20 minutes decide whether we have a demo at all. Then you build the sideba
 - [ ] **Record a screen-capture fallback video once it works.** Insurance.
 
 Then, from ~T+0:45 once Seat 4's board holds state:
-- [ ] `app/api/copilotkit/route.ts` — `CopilotRuntime` + `AnthropicAdapter`, same
-      `ANTHROPIC_API_KEY` as the extractor, no second key
+- [ ] `app/api/copilotkit/route.ts` — `CopilotRuntime` + `OpenAIAdapter`, handed
+      the same OpenRouter client from `lib/llm.ts`. No second key, no second
+      provider.
 - [ ] `<CopilotKit runtimeUrl="/api/copilotkit">` provider in `app/layout.tsx`
       (the TODO marker is already there) + `<CopilotSidebar>`
 - [ ] `useCopilotReadable({ description: 'All commitments in the group, who owes
@@ -227,8 +251,8 @@ generations of the API live at once and the docs mix them:
 
 Paste a v1 snippet into a v2 install and you get "hook is not exported" and lose
 half an hour. **Install, open `node_modules/@copilotkit/react-core`, look at what
-is actually exported, then write code.** Use v1 — `AnthropicAdapter` runs on the
-key we already have.
+is actually exported, then write code.** Use v1 — `OpenAIAdapter` takes a plain
+OpenAI client, which is exactly what `lib/llm.ts` already exports.
 
 The sidebar is the first thing cut at T+1:40 if the gate is at risk. Seat 4's
 board is the demo; this is the second wow, not the first.
@@ -252,7 +276,7 @@ The skeleton is already on `main` and it builds. Clone, then:
 ```bash
 npm install                 # workspace root, installs everything
 
-cp apps/web/.env.example apps/web/.env.local     # add ANTHROPIC_API_KEY
+cp apps/web/.env.example apps/web/.env.local     # add OPENROUTER_API_KEY
 cp apps/bot/.env.example apps/bot/.env           # add TELEGRAM_BOT_TOKEN
 
 npm run web                 # Next.js on :3000 — board + API
@@ -268,7 +292,7 @@ Every file you own has a `TODO SEAT n` marker in it saying what to replace.
 |---|---|
 | `packages/types/index.ts` | frozen contract — nobody edits after T+0:20 |
 | `apps/bot/src/index.ts` | 1 |
-| `apps/web/lib/extract.ts`, `apps/web/fixtures/demo.json` | 2 |
+| `apps/web/lib/extract.ts`, `apps/web/fixtures/demo.json`, `scripts/eval.ts` | 2 |
 | `apps/web/lib/store.ts`, `apps/web/app/api/*` | 3 |
 | `apps/web/app/page.tsx` | 4 |
 | `apps/web/app/layout.tsx`, `app/api/copilotkit/` | 5 |
