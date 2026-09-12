@@ -131,5 +131,15 @@ bot.on('callback_query:data', async ctx => {
 // Last line of defence: log and keep polling rather than exit.
 bot.catch(err => console.error('[bot]', err.message))
 
+// Without this the commands never appear in Telegram's menu or autocomplete.
+// Private scope only — the bot must not advertise itself inside the group.
+await bot.api.setMyCommands(
+  [
+    { command: 'me', description: 'What I owe people' },
+    { command: 'start', description: 'Start here' },
+  ],
+  { scope: { type: 'all_private_chats' } },
+)
+
 bot.start()
 console.log(`bot: long polling started, marking with ${MARK}`)
