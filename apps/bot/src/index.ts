@@ -14,47 +14,6 @@ const MARK = '✍️'
 // on the next window instead of being lost forever.
 const marked = new Set<number>()
 
-// ---------------------------------------------------------------- group ingest
-
-bot.on('message:text', async ctx => {
-  if (ctx.chat.type === 'private') return   // private chats are the digest below
-
-  const msg: IngestMessage = {
-    messageId: ctx.message.message_id,
-    chatId: ctx.chat.id,
-    userId: String(ctx.from.id),
-    name: ctx.from.first_name ?? ctx.from.username ?? 'unknown',
-    text: ctx.message.text,
-    ts: ctx.message.date,
-  }
-
-  let reactTo: number[] = []
-  try {
-    const res = await fetch(`${WEB_URL}/api/ingest`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(msg),
-    })
-    if (!res.ok) throw new Error(`ingest returned ${res.status}`)
-    ;({ reactTo } = (await res.json()) as { reactTo: number[] })
-  } catch (err) {
-    console.error('[ingest]', (err as Error).message)
-    return
-  }
-
-  for (const id of reactTo) {
-    if (marked.has(id)) continue
-    try {
-      await ctx.api.setMessageReaction(ctx.chat.id, id, [{ type: 'emoji', emoji: MARK }])
-      marked.add(id)
-      console.log(`[react] ${MARK} on ${id}`)
-    } catch (err) {
-      // A failed reaction must never take the bot down mid-demo.
-      console.error('[react]', (err as Error).message)
-    }
-  }
-})
-
 // ------------------------------------------------------------------ DM digest
 
 async function mine(userId: string): Promise<Commitment[]> {
@@ -83,6 +42,13 @@ function render(list: Commitment[]) {
     keyboard,
   }
 }
+
+bot.use(async (ctx, next) => {
+  if (ctx.chat?.type === 'private') {
+    console.log(`[dm] ${ctx.from?.first_name}: ${ctx.message?.text ?? ctx.callbackQuery?.data ?? '?'}`)
+  }
+  await next()
+})
 
 async function showDigest(ctx: Parameters<Parameters<typeof bot.command>[1]>[0]) {
   try {
@@ -123,6 +89,47 @@ bot.on('callback_query:data', async ctx => {
   } catch (err) {
     console.error('[done]', (err as Error).message)
     await ctx.answerCallbackQuery({ text: 'Could not update' })
+  }
+})
+
+// ---------------------------------------------------------------- group ingest
+
+bot.on('message:text', async ctx => {
+  if (ctx.chat.type === 'private') return   // already handled by the digest above
+
+  const msg: IngestMessage = {
+    messageId: ctx.message.message_id,
+    chatId: ctx.chat.id,
+    userId: String(ctx.from.id),
+    name: ctx.from.first_name ?? ctx.from.username ?? 'unknown',
+    text: ctx.message.text,
+    ts: ctx.message.date,
+  }
+
+  let reactTo: number[] = []
+  try {
+    const res = await fetch(`${WEB_URL}/api/ingest`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(msg),
+    })
+    if (!res.ok) throw new Error(`ingest returned ${res.status}`)
+    ;({ reactTo } = (await res.json()) as { reactTo: number[] })
+  } catch (err) {
+    console.error('[ingest]', (err as Error).message)
+    return
+  }
+
+  for (const id of reactTo) {
+    if (marked.has(id)) continue
+    try {
+      await ctx.api.setMessageReaction(ctx.chat.id, id, [{ type: 'emoji', emoji: MARK }])
+      marked.add(id)
+      console.log(`[react] ${MARK} on ${id}`)
+    } catch (err) {
+      // A failed reaction must never take the bot down mid-demo.
+      console.error('[react]', (err as Error).message)
+    }
   }
 })
 
