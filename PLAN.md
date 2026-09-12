@@ -298,6 +298,18 @@ Every file you own has a `TODO SEAT n` marker in it saying what to replace.
 | `apps/web/app/page.tsx` | 4 |
 | `apps/web/app/layout.tsx`, `app/api/copilotkit/` | 5 |
 
+## Gotchas that already cost us time
+
+- **Never run `npm run build` while `npm run dev` is running.** They share
+  `apps/web/.next` and the production build clobbers the dev chunks — every route
+  starts 500ing with `Cannot find module './chunks/vendor-chunks/next.js'`. Fix:
+  stop dev, `rm -rf apps/web/.next`, start dev again.
+- **The store empties on every web restart.** `curl -X POST localhost:3000/api/seed`
+  to refill.
+- **`curl -s localhost:3000/api/debug`** shows people, commitments and every raw
+  message ingested. When a message does not become a card, look here first — it
+  tells you whether it was even received.
+
 ## Rules for the next 2.5 hours
 
 1. **Stay in your own files.** The contract above is the only shared surface.
