@@ -1,0 +1,102 @@
+[h1] Overheard
+[p] Promises people made to each other, never typed into anything.
+[span] Outstanding
+[span] Settled
+[span] Listening
+[h2] Meetings
+[span] agreed
+[p] pricing discussion
+[span] Thursday afternoon
+[p] can we talk pricing Thursday afternoon
+[p] standup
+[span] tomorrow 09:30
+[p] standup tomorrow half nine
+[p] retro
+[span] Friday 16:00
+[p] let's do a retro Friday at 4
+[p] judging slot
+[span] 16.9.2026 at 10:30
+[p] our slot is 16.9. at 10:30
+[h2] Yasin
+[span] outstanding
+[p] review the ata-dev branch
+[span] tonight
+[span] Ata
+[p] I'll look at your branch tonight
+[p] send the repo link to the judges
+[span] after the demo
+[p] I'll send them the repo afterwards
+[p] decide what we cut if we run out of time
+[span] before the rehearsal
+[p] I'll decide the cut list before we rehearse
+[p] write the 90 second script
+[span] this evening
+[span] Sefa
+[p] I'll draft the script this evening
+[h2] Mehmet Cem
+[span] outstanding
+[p] summarise what the extractor gets wrong
+[span] before the demo
+[span] Yasin
+[p] I'll write up the failure cases before the demo
+[p] look into why the second window returns nothing
+[span] Wednesday
+[p] I'll dig into that on Wednesday
+[p] check the token spend before we scale up
+[span] Friday
+[span] Yasin
+[p] I'll check what we're actually spending on Friday
+[p] add retry handling to the OpenRouter call
+[span] Thursday
+[p] I can add retries by Thursday
+[h2] Gokhan
+[span] outstanding
+[p] check the bot reconnects after a network drop
+[span] Wednesday
+[p] I'll test the reconnect behaviour Wednesday
+[p] clean up the seed fixture
+[span] tonight
+[p] I'll tidy the fixture tonight
+[p] get the numbers from Mehmet
+[span] tomorrow
+[span] Mehmet Cem
+[p] I'll chase Mehmet for the numbers tomorrow
+[p] test what happens with 200 messages in the window
+[span] Friday
+[p] I'll stress test the window on Friday
+[h2] Ata
+[span] outstanding
+[p] do a pass on the meeting card
+[span] tomorrow
+[p] I'll refine the meeting card tomorrow
+[p] check the dark mode contrast
+[span] before the demo
+[p] I'll check contrast before we present
+[p] export the icon set
+[span] Friday
+[span] Sefa
+[p] I'll export the icons for you Friday
+[p] walk the client through the deck
+[span] Thursday
+[span] Yasin
+[p] I can take it to them Thursday
+[h2] Sefa
+[span] outstanding
+[p] time the run-through
+[span] at the rehearsal
+[p] I'll time us at the rehearsal
+[p] collect everyone’s Telegram ids
+[span] in the next 10 minutes
+[p] I'll get everyone's ids in the next ten minutes
+[p] check the projector resolution
+[span] before we go on
+[span] Yasin
+[p] I'll check the projector beforehand
+[p] record the fallback video
+[span] right after the rehearsal
+[span] Yasin
+[p] I'll record it straight after we rehearse
+[div] Ask about the group
+[div] I can see every commitment and meeting in the group.
+[div] Try: "what is Mehmet on the hook for?" or "close the pricing numbers"
+[p] Powered by CopilotKit

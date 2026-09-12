@@ -1,0 +1,318 @@
+<template>
+  <div
+    id="root"
+    data-composition-id="07-brand"
+    data-start="0"
+    data-duration="4"
+    data-width="1920"
+    data-height="1080"
+  >
+    <style>
+      /* ---- shipped project fonts (capture/assets/fonts) ---- */
+      @font-face {
+        font-family: "DM Sans";
+        font-style: normal;
+        font-weight: 400;
+        font-display: block;
+        src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+          U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+          U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "DM Sans";
+        font-style: normal;
+        font-weight: 400;
+        font-display: block;
+        src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2) format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+          U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+          U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "DM Sans";
+        font-style: normal;
+        font-weight: 500;
+        font-display: block;
+        src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+          U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+          U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "DM Sans";
+        font-style: normal;
+        font-weight: 500;
+        font-display: block;
+        src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2) format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+          U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+          U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+      @font-face {
+        font-family: "DM Sans";
+        font-style: normal;
+        font-weight: 700;
+        font-display: block;
+        src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+          U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+          U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: "DM Sans";
+        font-style: normal;
+        font-weight: 700;
+        font-display: block;
+        src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2) format("woff2");
+        unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+          U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+          U+2113, U+2C60-2C7F, U+A720-A7FF;
+      }
+
+      #root,
+      #root * {
+        box-sizing: border-box;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        container-type: size;
+        isolation: isolate;
+        font-family: "DM Sans", sans-serif;
+
+        /* frame.md tokens */
+        --bg07: #f1f1f4;
+        --primary07: #f5401d;
+        --ink07: #111114;
+        --light07: #6a6a74; /* was #a2a2ac (text-light): ~2:1 on the light ground —
+                               unreadable projected. text-muted keeps it in the
+                               system at ~4.7:1. */
+        --tile07: #ffffff;
+
+        /* lockup geometry */
+        --pad07: 56px; /* ink-block left padding            */
+        --pip07: 18px; /* primary pip diameter              */
+        --pipgap07: 24px; /* pip -> wordmark gap               */
+        --keepout07: 184px; /* bottom caption keep-out (17%)     */
+      }
+
+      /* ---- full-bleed ground (its own clip layer, never on #root) ---- */
+      .brand07-bg {
+        position: absolute;
+        inset: 0;
+        background: var(--bg07);
+      }
+
+      /* closing atmosphere: concentric rings, frame.md treatment 6 */
+      .brand07-rings {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: calc(1080px - var(--keepout07));
+        pointer-events: none;
+      }
+      .brand07-ring {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        border-radius: 50%;
+        border: 1.5px solid rgba(245, 64, 29, 0.09);
+      }
+      .brand07-ring.r1 {
+        width: 620px;
+        height: 620px;
+      }
+      .brand07-ring.r2 {
+        width: 1010px;
+        height: 1010px;
+        border-color: rgba(245, 64, 29, 0.065);
+      }
+      .brand07-ring.r3 {
+        width: 1440px;
+        height: 1440px;
+        border-color: rgba(245, 64, 29, 0.045);
+      }
+
+      /* ---- the lockup stage ---- */
+      .brand07-stage {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-bottom: var(--keepout07);
+      }
+
+      .brand07-col {
+        width: 45cqw; /* ~864px — the ink block is ~45% of canvas */
+      }
+
+      /* the real dashboard's own brand tile, scaled up */
+      .brand07-ink {
+        width: 100%;
+        height: 250px;
+        background: var(--ink07);
+        color: var(--tile07);
+        border-radius: 34px;
+        padding: 0 var(--pad07);
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .brand07-lockup {
+        display: flex;
+        align-items: center;
+        gap: var(--pipgap07);
+      }
+
+      .brand07-pip {
+        width: var(--pip07);
+        height: var(--pip07);
+        flex: 0 0 var(--pip07);
+        border-radius: 50%;
+        background: var(--primary07);
+        box-shadow: 0 0 20px rgba(245, 64, 29, 0.6);
+        transform-origin: 50% 50%;
+      }
+
+      .brand07-wordmark {
+        font-family: "DM Sans", sans-serif;
+        font-size: 4.2cqw; /* frame.md h1 — the display role */
+        font-weight: 700;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        color: var(--tile07);
+        white-space: nowrap;
+      }
+
+      .brand07-line {
+        margin-top: 60px;
+        padding-left: calc(var(--pad07) + var(--pip07) + var(--pipgap07));
+        font-family: "DM Sans", sans-serif;
+        font-size: 1.42cqw;
+        font-weight: 400;
+        line-height: 1.45;
+        letter-spacing: -0.005em;
+        color: var(--light07);
+        white-space: nowrap;
+      }
+      .brand07-word {
+        display: inline-block;
+      }
+    </style>
+
+    <div
+      class="clip brand07-bg"
+      id="brand07-bg"
+      data-start="0"
+      data-duration="4"
+      data-track-index="0"
+    ></div>
+
+    <div
+      class="clip brand07-rings"
+      id="brand07-rings"
+      data-start="0"
+      data-duration="4"
+      data-track-index="1"
+    >
+      <div class="brand07-ring r1"></div>
+      <div class="brand07-ring r2"></div>
+      <div class="brand07-ring r3"></div>
+    </div>
+
+    <div
+      class="clip brand07-stage"
+      id="brand07-stage"
+      data-start="0"
+      data-duration="4"
+      data-track-index="2"
+    >
+      <div class="brand07-col">
+        <div class="brand07-ink" id="brand07-ink">
+          <div class="brand07-lockup">
+            <span class="brand07-pip" id="brand07-pip"></span>
+            <span class="brand07-wordmark" id="brand07-wordmark">Overheard</span>
+          </div>
+        </div>
+        <p class="brand07-line" id="brand07-line"><span class="brand07-word">Promises</span> <span class="brand07-word">people</span> <span class="brand07-word">made</span> <span class="brand07-word">to</span> <span class="brand07-word">each</span> <span class="brand07-word">other,</span> <span class="brand07-word">never</span> <span class="brand07-word">typed</span> <span class="brand07-word">into</span> <span class="brand07-word">anything.</span></p>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        var root = document.getElementById("root");
+        var rings = root.querySelector("#brand07-rings");
+        var ink = root.querySelector("#brand07-ink");
+        var wordmark = root.querySelector("#brand07-wordmark");
+        var pip = root.querySelector("#brand07-pip");
+        var words = Array.prototype.slice.call(root.querySelectorAll(".brand07-word"));
+
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+
+        /* ---------------------------------------------------------------
+           Scene 1 (0.0-1.5s) — the ink block rises into the centre of the
+           bg ground and the wordmark settles inside it on a long tail.
+           Calm-settle spring-pop entrance: power3/power4 out, no overshoot.
+        ---------------------------------------------------------------- */
+        tl.fromTo(
+          rings,
+          { opacity: 0, scale: 0.94 },
+          { opacity: 1, scale: 1, duration: 1.6, ease: "power2.out" },
+          0,
+        );
+
+        tl.fromTo(
+          ink,
+          { y: 46, scale: 0.986, opacity: 0 },
+          { y: 0, scale: 1, opacity: 1, duration: 0.72, ease: "power3.out" },
+          0,
+        );
+
+        tl.fromTo(
+          wordmark,
+          { y: 40, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1.15, ease: "power4.out" },
+          0.26,
+        );
+
+        /* ---------------------------------------------------------------
+           Scene 2 (1.5-3.0s) — the product's own line fades up beneath the
+           block, on the wordmark's own left margin, left-to-right.
+        ---------------------------------------------------------------- */
+        words.forEach(function (word, index) {
+          tl.fromTo(
+            word,
+            { y: 22, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.82, ease: "power3.out" },
+            1.52 + index * 0.05,
+          );
+        });
+
+        /* ---------------------------------------------------------------
+           Scene 3 (3.0-4.0s) — a single primary pip sets to the left of the
+           wordmark and stays lit. Then the film holds still and stops.
+        ---------------------------------------------------------------- */
+        tl.fromTo(
+          pip,
+          { scale: 0, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.44, ease: "power3.out" },
+          3.02,
+        );
+
+        window.__timelines["07-brand"] = tl;
+      })();
+    </script>
+  </div>
+</template>

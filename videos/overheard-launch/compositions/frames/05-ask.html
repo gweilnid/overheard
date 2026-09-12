@@ -1,0 +1,514 @@
+<template>
+  <style>
+    /* shipped brand faces — files staged with the capture */
+    @font-face { font-family: "DM Sans"; font-style: normal; font-weight: 400; src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format("woff2"); }
+    @font-face { font-family: "DM Sans"; font-style: normal; font-weight: 500; src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format("woff2"); }
+    @font-face { font-family: "DM Sans"; font-style: normal; font-weight: 600; src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format("woff2"); }
+    @font-face { font-family: "DM Sans"; font-style: normal; font-weight: 700; src: url(capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2) format("woff2"); }
+    @font-face { font-family: "DM Mono"; font-style: normal; font-weight: 400; src: url(capture/assets/fonts/aFTU7PB1QTsUX8KYthqQBK6PYK0.woff2) format("woff2"); }
+    @font-face { font-family: "DM Mono"; font-style: normal; font-weight: 500; src: url(capture/assets/fonts/aFTR7PB1QTsUX8KYvumzEYOtbYf-Vlg.woff2) format("woff2"); }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: "DM Sans", sans-serif;
+      color: #111114;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root *,
+    #root *::before,
+    #root *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    #root .clip { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; }
+
+    /* ---------- ground ---------- */
+    #ask05-ground { background: #f1f1f4; }
+
+    /* ---------- the real captured board, held 1:1 ---------- */
+    #ask05-plate { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+    #ask05-veil {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(17, 17, 20, 0.04) 0%,
+        rgba(17, 17, 20, 0.07) 45%,
+        rgba(17, 17, 20, 0.13) 70%,
+        rgba(17, 17, 20, 0.3) 100%
+      );
+    }
+
+    /* ---------- source flashes, drawn on the real cards ---------- */
+    .ask05-flash {
+      position: absolute;
+      border: 2px solid rgba(245, 64, 29, 0.62);
+      border-radius: 12px;
+      background: rgba(245, 64, 29, 0.1);
+    }
+    #ask05-flash-gokhan { left: 971px; top: 347px; width: 604px; height: 96px; }
+    #ask05-flash-yasin { left: 28px; top: 252px; width: 292px; height: 96px; }
+    /* Sefa's column lies behind the panel — her flash reads as accent light
+       spilling out from under the panel's left edge. */
+    #ask05-spill {
+      position: absolute;
+      left: 1288px;
+      top: 466px;
+      width: 66px;
+      height: 90px;
+      border-radius: 6px 0 0 6px;
+      background: linear-gradient(
+        270deg,
+        rgba(245, 64, 29, 0.6) 0%,
+        rgba(245, 64, 29, 0.2) 44%,
+        rgba(245, 64, 29, 0) 100%
+      );
+    }
+
+    /* ---------- the write: the card greys, is struck, the count drops ---------- */
+    #ask05-grey {
+      position: absolute;
+      left: 975px;
+      top: 351px;
+      width: 595px;
+      height: 88px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    #ask05-grey > i {
+      position: absolute;
+      left: -975px;
+      top: -351px;
+      width: 1920px;
+      height: 1080px;
+      display: block;
+      background-image: url(assets/scroll-000.png);
+      background-size: 1920px 1080px;
+      background-repeat: no-repeat;
+      filter: grayscale(1) opacity(0.34);
+    }
+    #ask05-total {
+      position: absolute;
+      left: 664px;
+      top: 58px;
+      width: 86px;
+      height: 64px;
+      background: #ffffff;
+    }
+    #ask05-total span {
+      position: absolute;
+      left: 13px;
+      top: 10px;
+      font-weight: 700;
+      font-size: 45px;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      color: #f5401d;
+    }
+    #ask05-strike {
+      position: absolute;
+      left: 985px;
+      top: 369px;
+      width: 181px;
+      height: 3px;
+      border-radius: 2px;
+      background: #f5401d;
+      transform-origin: left center;
+    }
+    #ask05-count {
+      position: absolute;
+      left: 1438px;
+      top: 214px;
+      width: 130px;
+      height: 34px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 7px;
+      font-family: "DM Mono", monospace;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 1;
+      color: #a2a2ac;
+    }
+
+    /* ---------- the agent sidebar ---------- */
+    #ask05-panel {
+      position: absolute;
+      left: 1352px;
+      top: 44px;
+      width: 552px;
+      height: 838px;
+      background: #ffffff;
+      border: 1.5px solid #ebebf0;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    #ask05-head { position: absolute; left: 32px; top: 28px; display: flex; align-items: center; gap: 10px; }
+    #ask05-head span.dot { display: block; width: 9px; height: 9px; border-radius: 50%; background: #f5401d; }
+    #ask05-head span.label {
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f5401d;
+      line-height: 1;
+    }
+    #ask05-headrule { position: absolute; left: 32px; top: 74px; width: 488px; height: 1.5px; background: #ebebf0; }
+
+    .ask05-bubble {
+      position: absolute;
+      right: 32px;
+      max-width: 420px;
+      padding: 13px 22px;
+      border-radius: 100px;
+      background: rgba(245, 64, 29, 0.08);
+      color: #111114;
+      font-weight: 500;
+      font-size: 19px;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+    #ask05-q1 { top: 104px; }
+    #ask05-q2 { top: 560px; }
+
+    #ask05-dots { position: absolute; left: 32px; top: 176px; display: flex; gap: 9px; }
+    #ask05-dots i { display: block; width: 9px; height: 9px; border-radius: 50%; background: #a2a2ac; }
+
+    .ask05-row { position: absolute; left: 32px; width: 488px; padding-left: 18px; }
+    #ask05-row1 { top: 196px; }
+    #ask05-row2 { top: 310px; }
+    #ask05-row3 { top: 424px; }
+    .ask05-rule {
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 3px;
+      height: 82px;
+      border-radius: 2px;
+      background: #f5401d;
+      transform-origin: top center;
+    }
+    .ask05-owner { font-weight: 500; font-size: 14px; letter-spacing: 0.04em; color: #a2a2ac; line-height: 1.2; }
+    .ask05-task {
+      margin-top: 6px;
+      font-weight: 500;
+      font-size: 21px;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: #111114;
+    }
+    .ask05-w { display: inline-block; white-space: pre; }
+    .ask05-due {
+      margin-top: 10px;
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 100px;
+      background: rgba(245, 64, 29, 0.08);
+      color: #f5401d;
+      font-family: "DM Mono", monospace;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+    .ask05-sep { position: absolute; left: 32px; width: 488px; height: 1.5px; background: #ebebf0; }
+    #ask05-sep1 { top: 296px; }
+    #ask05-sep2 { top: 410px; }
+
+    #ask05-reply { position: absolute; left: 32px; top: 636px; display: flex; align-items: center; gap: 14px; }
+    #ask05-reply .mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(245, 64, 29, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #ask05-reply .word { font-weight: 600; font-size: 30px; letter-spacing: -0.02em; line-height: 1; color: #111114; }
+
+    #ask05-input {
+      position: absolute;
+      left: 32px;
+      top: 736px;
+      width: 488px;
+      height: 68px;
+      border: 1.5px solid #ebebf0;
+      border-radius: 100px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      padding-left: 26px;
+      padding-right: 76px;
+      overflow: hidden;
+    }
+    #ask05-inputline {
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 1.2;
+      color: #111114;
+      white-space: pre;
+      display: flex;
+      align-items: center;
+    }
+    #ask05-caret { display: inline-block; width: 2.5px; height: 25px; margin-left: 3px; background: #f5401d; flex: 0 0 auto; }
+    #ask05-send {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      margin-top: -22px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #f5401d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+
+  <div id="root" data-composition-id="05-ask" data-width="1920" data-height="1080" data-duration="10.5">
+    <div id="ask05-ground" class="clip" data-start="0" data-duration="10.5" data-track-index="0"></div>
+
+    <div id="ask05-boardlayer" class="clip" data-start="0" data-duration="10.5" data-track-index="1">
+      <img id="ask05-plate" src="assets/scroll-000.png" alt="" />
+      <div id="ask05-grey"><i></i></div>
+      <div id="ask05-count">4 outstanding</div>
+      <div id="ask05-total"><span>34</span></div>
+      <div id="ask05-veil"></div>
+      <div id="ask05-spill"></div>
+      <div id="ask05-flash-yasin" class="ask05-flash"></div>
+      <div id="ask05-flash-gokhan" class="ask05-flash"></div>
+      <div id="ask05-strike"></div>
+    </div>
+
+    <div id="ask05-panellayer" class="clip" data-start="0" data-duration="10.5" data-track-index="2">
+      <div id="ask05-panel">
+        <div id="ask05-head"><span class="dot"></span><span class="label">Ask the board</span></div>
+        <div id="ask05-headrule"></div>
+        <div id="ask05-q1" class="ask05-bubble">what&#39;s due today?</div>
+        <div id="ask05-dots"><i></i><i></i><i></i></div>
+
+        <div id="ask05-row1" class="ask05-row">
+          <div class="ask05-rule"></div>
+          <div class="ask05-owner"><span class="ask05-w">G&#246;khan</span></div>
+          <div class="ask05-task"><span class="ask05-w">clean </span><span class="ask05-w">up </span><span class="ask05-w">the </span><span class="ask05-w">seed </span><span class="ask05-w">fixture</span></div>
+          <div><span class="ask05-due">tonight</span></div>
+        </div>
+        <div id="ask05-sep1" class="ask05-sep"></div>
+
+        <div id="ask05-row2" class="ask05-row">
+          <div class="ask05-rule"></div>
+          <div class="ask05-owner"><span class="ask05-w">Yasin</span></div>
+          <div class="ask05-task"><span class="ask05-w">review </span><span class="ask05-w">the </span><span class="ask05-w">ata-dev </span><span class="ask05-w">branch</span></div>
+          <div><span class="ask05-due">tonight</span></div>
+        </div>
+        <div id="ask05-sep2" class="ask05-sep"></div>
+
+        <div id="ask05-row3" class="ask05-row">
+          <div class="ask05-rule"></div>
+          <div class="ask05-owner"><span class="ask05-w">Sefa</span></div>
+          <div class="ask05-task"><span class="ask05-w">collect </span><span class="ask05-w">everyone&#39;s </span><span class="ask05-w">Telegram </span><span class="ask05-w">ids</span></div>
+          <div><span class="ask05-due">in the next 10 minutes</span></div>
+        </div>
+
+        <div id="ask05-q2" class="ask05-bubble">close the seed fixture one</div>
+
+        <div id="ask05-reply">
+          <span class="mark">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path id="ask05-check" d="M3.2 8.4 L6.5 11.6 L12.8 4.8" stroke="#F5401D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <span class="word">Closed.</span>
+        </div>
+
+        <div id="ask05-input">
+          <div id="ask05-inputline"><span id="ask05-text"></span><span id="ask05-caret"></span></div>
+          <div id="ask05-send">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <path d="M9 15 L9 3 M4 8 L9 3 L14 8" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        var root = document.querySelector('[data-composition-id="05-ask"]') || document.getElementById("root");
+        var q = function (s) { return root.querySelector(s); };
+        var qa = function (s) { return Array.prototype.slice.call(root.querySelectorAll(s)); };
+        var DUR = 10;
+
+        // Deterministic keystroke rhythm: one fixed-seed LCG, consumed in a single
+        // synchronous pass. The only "randomness" here, identical on every build.
+        var lcg = 0x2f6e2b17 >>> 0;
+        function rnd() {
+          lcg = (Math.imul(1664525, lcg) + 1013904223) >>> 0;
+          return lcg / 4294967296;
+        }
+
+        // ONE text-at-time table covering both questions and both clears. A single
+        // driver reads it, so forward, backward and repeated seeks resolve the same
+        // string — nothing is incremental.
+        var rows = [{ t: 0, x: "" }];
+        function typeInto(text, startT, endT) {
+          var first = rows.length;
+          var t = startT;
+          var acc = "";
+          var words = text.split(" ");
+          for (var wi = 0; wi < words.length; wi += 1) {
+            var w = words[wi];
+            if (wi > 0) { acc += " "; t += 0.05 + rnd() * 0.06; }
+            var i = 0;
+            while (i < w.length) {
+              var n = 1 + Math.floor(rnd() * 3);
+              var chunk = w.slice(i, i + n);
+              i += n;
+              t += chunk.length * (0.042 + rnd() * 0.032);
+              acc += chunk;
+              rows.push({ t: t, x: acc });
+            }
+          }
+          // Fit the natural cadence to the authored window proportionally — never
+          // gsap.timeScale(), never spilling into the next beat.
+          var natural = rows[rows.length - 1].t;
+          if (natural > startT) {
+            var f = (endT - startT) / (natural - startT);
+            for (var k = first; k < rows.length; k += 1) {
+              rows[k].t = startT + (rows[k].t - startT) * f;
+            }
+          }
+        }
+
+        var Q1_START = 1.4, Q1_END = 2.78, Q1_SUBMIT = 2.82;
+        var Q2_START = 5.3, Q2_END = 6.74, Q2_SUBMIT = 6.78;
+        typeInto("what's due today?", Q1_START, Q1_END);
+        rows.push({ t: Q1_SUBMIT, x: "" });
+        typeInto("close the seed fixture one", Q2_START, Q2_END);
+        rows.push({ t: Q2_SUBMIT, x: "" });
+
+        function textAt(time) {
+          for (var i = rows.length - 1; i >= 0; i -= 1) {
+            if (time >= rows[i].t - 0.001) return rows[i].x;
+          }
+          return "";
+        }
+
+        var textEl = q("#ask05-text"), caretEl = q("#ask05-caret");
+        var panel = q("#ask05-panel"), checkPath = q("#ask05-check");
+        var CHECK_LEN = 22;
+        textEl.textContent = "";
+
+        gsap.set(panel, { x: 620, opacity: 0 });
+        gsap.set("#ask05-veil", { opacity: 0 });
+        gsap.set(["#ask05-head", "#ask05-headrule"], { opacity: 0 });
+        gsap.set("#ask05-input", { opacity: 0, scale: 0.96 });
+        gsap.set(caretEl, { opacity: 0 });
+        gsap.set(["#ask05-q1", "#ask05-q2", "#ask05-reply", "#ask05-dots"], { opacity: 0 });
+        gsap.set(qa(".ask05-w"), { opacity: 0 });
+        gsap.set(qa(".ask05-due"), { opacity: 0 });
+        gsap.set(qa(".ask05-rule"), { scaleY: 0 });
+        gsap.set(qa(".ask05-sep"), { opacity: 0 });
+        gsap.set(["#ask05-flash-yasin", "#ask05-flash-gokhan", "#ask05-spill", "#ask05-grey", "#ask05-count", "#ask05-total"], { opacity: 0 });
+        gsap.set("#ask05-strike", { scaleX: 0 });
+        gsap.set(checkPath, { strokeDasharray: CHECK_LEN, strokeDashoffset: CHECK_LEN });
+
+        var tl = gsap.timeline({ paused: true });
+
+        // --- the two table-driven passes, each one continuous sweep of the shot ---
+        var typeDriver = { t: 0 };
+        tl.to(typeDriver, { t: DUR, duration: DUR, ease: "none", onUpdate: function () {
+          textEl.textContent = textAt(typeDriver.t);
+        } }, 0);
+
+        // Caret: an INTEGER number of sine cycles across the whole shot, so the
+        // blink is identical on every seek and still alive through the final hold.
+        var blink = { p: 0 };
+        tl.to(blink, { p: Math.PI * 2 * 11, duration: DUR, ease: "none", onUpdate: function () {
+          caretEl.style.opacity = Math.sin(blink.p) >= 0 ? "1" : "0";
+        } }, 0);
+
+        // ===== Scene 1 (0.0-1.4) — board holds; the agent sidebar slides in =====
+        tl.to(panel, { x: 0, duration: 0.85, ease: "power3.out" }, 0.1);
+        tl.to(panel, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.1);
+        tl.to("#ask05-veil", { opacity: 1, duration: 1, ease: "power1.inOut" }, 0.25);
+        tl.fromTo("#ask05-head", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, 0.62);
+        tl.fromTo("#ask05-headrule", { opacity: 0, scaleX: 0.2 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: "power2.out" }, 0.7);
+        tl.fromTo("#ask05-input", { opacity: 0, scale: 0.94, y: 14 }, { opacity: 1, scale: 1, y: 0, duration: 0.42, ease: "back.out(1.7)" }, 0.92);
+        tl.to(caretEl, { opacity: 1, duration: 0.12 }, 1.22);
+
+        // ===== Scene 2 (1.4-3.2) — "what's due today?" types, submits, thinks =====
+        tl.to("#ask05-send", { scale: 0.84, duration: 0.07, ease: "power2.in" }, Q1_SUBMIT - 0.08);
+        tl.to("#ask05-send", { scale: 1, duration: 0.32, ease: "back.out(3)" }, Q1_SUBMIT - 0.01);
+        tl.fromTo("#ask05-q1", { opacity: 0, scale: 0.88, y: 12 }, { opacity: 1, scale: 1, y: 0, duration: 0.32, ease: "back.out(1.8)" }, Q1_SUBMIT + 0.02);
+        tl.fromTo("#ask05-dots", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 2.96);
+        var dots = qa("#ask05-dots i");
+        var pulse = { p: 0 };
+        tl.to(pulse, { p: Math.PI * 2 * 2, duration: 0.34, ease: "none", onUpdate: function () {
+          for (var i = 0; i < dots.length; i += 1) {
+            dots[i].style.opacity = (0.3 + 0.7 * (0.5 + 0.5 * Math.sin(pulse.p - i * 1.5))).toFixed(3);
+          }
+        } }, 2.96);
+        tl.to("#ask05-dots", { opacity: 0, duration: 0.12, ease: "power1.in" }, 3.22);
+
+        // ===== Scene 3 (3.2-5.2) — the answer streams; each row flashes its card =====
+        var rowPlan = [
+          { sel: "#ask05-row1", start: 3.3, sep: null },
+          { sel: "#ask05-row2", start: 3.96, sep: "#ask05-sep1" },
+          { sel: "#ask05-row3", start: 4.54, sep: "#ask05-sep2" }
+        ];
+        var landed = [];
+        rowPlan.forEach(function (plan) {
+          var rowEl = q(plan.sel);
+          tl.fromTo(rowEl.querySelector(".ask05-rule"), { scaleY: 0 }, { scaleY: 1, duration: 0.3, ease: "power2.out" }, plan.start - 0.04);
+          if (plan.sep) tl.to(plan.sep, { opacity: 1, duration: 0.25, ease: "power1.out" }, plan.start - 0.06);
+          var t = plan.start;
+          Array.prototype.slice.call(rowEl.querySelectorAll(".ask05-w")).forEach(function (wordEl) {
+            tl.fromTo(wordEl, { opacity: 0, y: 9 }, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, t);
+            t += 0.055 + rnd() * 0.075; // uneven token rhythm, same seeded stream
+          });
+          tl.fromTo(rowEl.querySelector(".ask05-due"), { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.26, ease: "back.out(2.2)" }, t + 0.04);
+          landed.push(t + 0.06);
+        });
+
+        // Row 1 -> Gokhan's real card. It stays faintly lit: it is the card the
+        // second ask is about to close.
+        tl.fromTo("#ask05-flash-gokhan", { opacity: 0 }, { opacity: 1, duration: 0.14, ease: "power2.out" }, landed[0]);
+        tl.to("#ask05-flash-gokhan", { opacity: 0.3, duration: 0.4, ease: "power2.inOut" }, landed[0] + 0.2);
+        // Row 2 -> Yasin's real card.
+        tl.fromTo("#ask05-flash-yasin", { opacity: 0 }, { opacity: 1, duration: 0.14, ease: "power2.out" }, landed[1]);
+        tl.to("#ask05-flash-yasin", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, landed[1] + 0.28);
+        // Row 3 -> Sefa's column sits behind the panel; the accent spills past its edge.
+        tl.fromTo("#ask05-spill", { opacity: 0 }, { opacity: 1, duration: 0.16, ease: "power2.out" }, landed[2]);
+        tl.to("#ask05-spill", { opacity: 0, duration: 0.55, ease: "power2.inOut" }, landed[2] + 0.3);
+
+        // ===== Scene 4 (5.2-7.0) — the second ask types into the same input =====
+        tl.to("#ask05-send", { scale: 0.84, duration: 0.07, ease: "power2.in" }, Q2_SUBMIT - 0.08);
+        tl.to("#ask05-send", { scale: 1, duration: 0.32, ease: "back.out(3)" }, Q2_SUBMIT - 0.01);
+        tl.fromTo("#ask05-q2", { opacity: 0, scale: 0.88, y: 12 }, { opacity: 1, scale: 1, y: 0, duration: 0.32, ease: "back.out(1.8)" }, Q2_SUBMIT + 0.02);
+        tl.to("#ask05-flash-gokhan", { opacity: 0.85, duration: 0.26, ease: "power2.out" }, Q2_SUBMIT);
+
+        // ===== Scene 5 (7.0-8.6) — "Closed.", and the board changes underneath =====
+        tl.fromTo("#ask05-reply", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.34, ease: "power3.out" }, 7.1);
+        tl.to(checkPath, { strokeDashoffset: 0, duration: 0.28, ease: "power2.out" }, 7.24);
+        tl.fromTo("#ask05-strike", { scaleX: 0 }, { scaleX: 1, duration: 0.44, ease: "power2.inOut" }, 7.4);
+        tl.to("#ask05-grey", { opacity: 1, duration: 0.6, ease: "power1.inOut" }, 7.6);
+        tl.fromTo("#ask05-count", { opacity: 0 }, { opacity: 1, duration: 0.44, ease: "power1.inOut" }, 7.78);
+        tl.fromTo("#ask05-total", { opacity: 0 }, { opacity: 1, duration: 0.44, ease: "power1.inOut" }, 7.86);
+        tl.to("#ask05-flash-gokhan", { opacity: 0, duration: 0.45, ease: "power2.inOut" }, 7.92);
+
+        // ===== Scene 6 (8.6-10.0) — held. Only the caret moves. =====
+
+        tl.seek(0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["05-ask"] = tl;
+      })();
+    </script>
+  </div>
+</template>

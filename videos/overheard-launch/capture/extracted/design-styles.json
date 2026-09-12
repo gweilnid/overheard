@@ -1,0 +1,225 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "DM Sans",
+      "fontSize": "30px",
+      "fontWeight": "700",
+      "lineHeight": "normal",
+      "letterSpacing": "-1.05px",
+      "color": "#FFFFFF",
+      "sampleText": "Overheard"
+    },
+    {
+      "role": "heading",
+      "fontFamily": "DM Sans",
+      "fontSize": "16.5px",
+      "fontWeight": "600",
+      "lineHeight": "normal",
+      "letterSpacing": "-0.2475px",
+      "color": "#F5401D",
+      "sampleText": "Meetings"
+    },
+    {
+      "role": "body",
+      "fontFamily": "DM Sans",
+      "fontSize": "15.5px",
+      "fontWeight": "500",
+      "lineHeight": "20.15px",
+      "letterSpacing": "-0.155px",
+      "color": "#111114",
+      "sampleText": "pricing discussion"
+    },
+    {
+      "role": "label",
+      "fontFamily": "DM Sans",
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "lineHeight": "normal",
+      "letterSpacing": "normal",
+      "color": "#111114",
+      "sampleText": "Thursday afternoon"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      1,
+      3,
+      6,
+      7,
+      8,
+      10,
+      11,
+      12,
+      14,
+      16,
+      18,
+      20,
+      22,
+      24
+    ],
+    "baseUnit": 4
+  },
+  "radius": [
+    "6px",
+    "8px"
+  ],
+  "shadows": [
+    {
+      "value": "rgba(17, 17, 20, 0.05) 0px 1px 2px 0px, rgba(17, 17, 20, 0.14) 0px 10px 28px -12px",
+      "count": 9
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+      "count": 1
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.16) 0px 5px 40px 0px",
+      "count": 1
+    }
+  ],
+  "buttons": [
+    {
+      "label": "button",
+      "background": "#1C1C1C",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "1px 6px",
+      "borderRadius": "50%",
+      "border": "1px solid rgb(28, 28, 28)",
+      "boxShadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "height": "56px"
+    },
+    {
+      "label": "button",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#000000",
+      "padding": "1px 6px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(0, 0, 0)",
+      "boxShadow": "none",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "height": "26px"
+    },
+    {
+      "label": "button",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1C1C1C",
+      "padding": "0px",
+      "borderRadius": "8px",
+      "border": "0px none rgb(28, 28, 28)",
+      "boxShadow": "none",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "height": "20px"
+    },
+    {
+      "label": "button",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#C8C8C8",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(200, 200, 200)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "24px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "#FFFFFF",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#111114",
+      "padding": "18px 20px 0px",
+      "borderRadius": "22px",
+      "border": "0px none rgb(17, 17, 20)",
+      "boxShadow": "rgba(17, 17, 20, 0.05) 0px 1px 2px 0px, rgba(17, 17, 20, 0.14) 0px 10px 28px -12px",
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "height": "520px"
+    },
+    {
+      "label": "card",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#111114",
+      "padding": "12px 0px",
+      "borderRadius": "0px",
+      "border": "",
+      "boxShadow": "none",
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "height": "96.3281px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "transparent",
+    "backgroundImage": "",
+    "backdropFilter": "",
+    "color": "#111114",
+    "padding": "0px 0px 12px",
+    "borderRadius": "0px",
+    "border": "0px none rgb(17, 17, 20)",
+    "boxShadow": "none",
+    "fontSize": "15px",
+    "fontWeight": "400",
+    "height": "33px"
+  },
+  "chips": [
+    {
+      "label": "Thursday afternoon",
+      "background": "transparent",
+      "color": "#111114",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(17, 17, 20)",
+      "boxShadow": "none",
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "height": "19px"
+    },
+    {
+      "label": "Thursday afternoon",
+      "background": "#FFF0EC",
+      "color": "#F5401D",
+      "padding": "3px 7px",
+      "borderRadius": "6px",
+      "border": "0px none rgb(245, 64, 29)",
+      "boxShadow": "none",
+      "fontSize": "10.5px",
+      "fontWeight": "400",
+      "height": "19px"
+    },
+    {
+      "label": "→ Ata",
+      "background": "#F4F4F7",
+      "color": "#6A6A74",
+      "padding": "3px 7px",
+      "borderRadius": "6px",
+      "border": "0px none rgb(106, 106, 116)",
+      "boxShadow": "none",
+      "fontSize": "10.5px",
+      "fontWeight": "400",
+      "height": "19px"
+    }
+  ],
+  "statCells": [],
+  "tabs": [],
+  "backgrounds": [],
+  "glass": []
+}

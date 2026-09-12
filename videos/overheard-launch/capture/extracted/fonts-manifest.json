@@ -1,0 +1,222 @@
+{
+  "files": [
+    {
+      "file": "LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yygg_vb.woff2",
+      "family": "Plus Jakarta Sans",
+      "rawFamily": "Plus Jakarta Sans",
+      "subfamily": "Regular",
+      "postscript": "PlusJakartaSans-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yygg_vbd-E.woff2",
+      "family": "Plus Jakarta Sans",
+      "rawFamily": "Plus Jakarta Sans",
+      "subfamily": "Regular",
+      "postscript": "PlusJakartaSans-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yygg_vbd-E.woff2",
+      "family": "Plus Jakarta Sans",
+      "rawFamily": "Plus Jakarta Sans",
+      "subfamily": "Regular",
+      "postscript": "PlusJakartaSans-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yygg_vbd-E.woff2",
+      "family": "Plus Jakarta Sans",
+      "rawFamily": "Plus Jakarta Sans",
+      "subfamily": "Regular",
+      "postscript": "PlusJakartaSans-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "R70MjzAei_CDNLfgZxrW6wrZOF2WdZ6xabUGSVtNuGC8NYtSwYZacXb00MM.woff2",
+      "family": "Spline Sans Mono",
+      "rawFamily": "Spline Sans Mono SemiBold",
+      "subfamily": "Regular",
+      "postscript": "SplineSansMono-SemiBold",
+      "weight": 600,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "R70MjzAei_CDNLfgZxrW6wrZOF2WdZ6xabUGSVtNuGC8NYtcwYZacXb00MP46g.woff2",
+      "family": "Spline Sans Mono",
+      "rawFamily": "Spline Sans Mono SemiBold",
+      "subfamily": "Regular",
+      "postscript": "SplineSansMono-SemiBold",
+      "weight": 600,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "aFTR7PB1QTsUX8KYvumzEY2tbYf-Vlh3uA.woff2",
+      "family": "DM Mono",
+      "rawFamily": "DM Mono Medium",
+      "subfamily": "Regular",
+      "postscript": "DMMono-Medium",
+      "weight": 500,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "aFTR7PB1QTsUX8KYvumzEYOtbYf-Vlg.woff2",
+      "family": "DM Mono",
+      "rawFamily": "DM Mono Medium",
+      "subfamily": "Regular",
+      "postscript": "DMMono-Medium",
+      "weight": 500,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "aFTU7PB1QTsUX8KYthSQBK6PYK3EXw.woff2",
+      "family": "DM Mono",
+      "rawFamily": "DM Mono",
+      "subfamily": "Regular",
+      "postscript": "DMMono-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "aFTU7PB1QTsUX8KYthqQBK6PYK0.woff2",
+      "family": "DM Mono",
+      "rawFamily": "DM Mono",
+      "subfamily": "Regular",
+      "postscript": "DMMono-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2",
+      "family": "DM Sans 9pt",
+      "rawFamily": "DM Sans 9pt",
+      "subfamily": "Regular",
+      "postscript": "DMSans-9ptRegular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "opsz",
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "rP2Hp2ywxg089UriCZOIHTWEBlw.woff2",
+      "family": "DM Sans 9pt",
+      "rawFamily": "DM Sans 9pt",
+      "subfamily": "Regular",
+      "postscript": "DMSans-9ptRegular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "opsz",
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    }
+  ],
+  "families": [
+    {
+      "family": "DM Mono",
+      "weights": [
+        400,
+        500
+      ],
+      "variable": false,
+      "fileCount": 4,
+      "files": [
+        "aFTR7PB1QTsUX8KYvumzEY2tbYf-Vlh3uA.woff2",
+        "aFTR7PB1QTsUX8KYvumzEYOtbYf-Vlg.woff2",
+        "aFTU7PB1QTsUX8KYthSQBK6PYK3EXw.woff2",
+        "aFTU7PB1QTsUX8KYthqQBK6PYK0.woff2"
+      ]
+    },
+    {
+      "family": "DM Sans 9pt",
+      "weights": [
+        400
+      ],
+      "variable": true,
+      "fileCount": 2,
+      "files": [
+        "rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2",
+        "rP2Hp2ywxg089UriCZOIHTWEBlw.woff2"
+      ]
+    },
+    {
+      "family": "Plus Jakarta Sans",
+      "weights": [
+        400
+      ],
+      "variable": true,
+      "fileCount": 4,
+      "files": [
+        "LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yygg_vb.woff2",
+        "LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko40yygg_vbd-E.woff2",
+        "LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko50yygg_vbd-E.woff2",
+        "LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko70yygg_vbd-E.woff2"
+      ]
+    },
+    {
+      "family": "Spline Sans Mono",
+      "weights": [
+        600
+      ],
+      "variable": false,
+      "fileCount": 2,
+      "files": [
+        "R70MjzAei_CDNLfgZxrW6wrZOF2WdZ6xabUGSVtNuGC8NYtSwYZacXb00MM.woff2",
+        "R70MjzAei_CDNLfgZxrW6wrZOF2WdZ6xabUGSVtNuGC8NYtcwYZacXb00MP46g.woff2"
+      ]
+    }
+  ],
+  "unidentified": [],
+  "meta": {
+    "generatedAt": "2026-09-12T11:57:35.411Z",
+    "tool": "fontkit"
+  }
+}

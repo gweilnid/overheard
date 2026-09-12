@@ -1,0 +1,191 @@
+<template>
+  <style>
+    /* — shipped brand face: DM Sans (variable wght), staged with the capture — */
+    @font-face {
+      font-family: "DM Sans";
+      font-style: normal;
+      font-weight: 100 1000;
+      font-display: block;
+      src: url("capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2");
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+        U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+        U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    @font-face {
+      font-family: "DM Sans";
+      font-style: normal;
+      font-weight: 100 1000;
+      font-display: block;
+      src: url("capture/assets/fonts/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2");
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+        U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+        U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    /* root is styled by #root — never by a class on the composition-id element */
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "DM Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .clip {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* full-bleed ground rides on its own clip layer, not on #root */
+    .hook-ground {
+      background: #f1f1f4;
+    }
+
+    /* rule-of-thirds: left margin at 150px, first baseline on the upper third */
+    .hook-stack {
+      position: absolute;
+      left: 150px;
+      top: 205px;
+      width: 1560px;
+    }
+
+    /* each row is its own mask box; padding clears asc/descenders, the negative
+       margin pulls the rows back to a 1.06em leading so the stack reads tight */
+    .hook-row {
+      font-size: 7.5cqw;
+      line-height: 1.06;
+      overflow: hidden;
+      padding: 0.1em 0 0.16em;
+      margin-bottom: -0.26em;
+    }
+    .hook-stack > .hook-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .hook-ink {
+      display: block;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #111114;
+      white-space: nowrap;
+    }
+
+    /* the frame's one accent */
+    .hook-ink-accent {
+      color: #f5401d;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="01-hook"
+    data-start="0"
+    data-duration="4.5"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- track 0 — full-bleed bg ground -->
+    <div
+      id="f01-hook-ground"
+      class="clip hook-ground"
+      data-start="0"
+      data-duration="4.5"
+      data-track-index="0"
+    ></div>
+
+    <!-- track 1 — the type -->
+    <div id="f01-hook-type" class="clip" data-start="0" data-duration="4.5" data-track-index="1">
+      <div class="hook-stack">
+        <!-- Scene 1 — display line one, revealed as one mask-up -->
+        <div id="f01-hook-setup">
+          <div class="hook-row">
+            <span class="hook-ink" id="f01-hook-ink-a">Everything your team</span>
+          </div>
+          <div class="hook-row">
+            <span class="hook-ink" id="f01-hook-ink-b">promised today</span>
+          </div>
+        </div>
+        <!-- Scene 2 — hard cut -->
+        <div class="hook-row">
+          <span class="hook-ink" id="f01-hook-ink-c" style="opacity: 0">is in the chat.</span>
+        </div>
+        <!-- Scene 3 — hard cut, in primary -->
+        <div class="hook-row">
+          <span
+            class="hook-ink hook-ink-accent"
+            id="f01-hook-ink-d"
+            style="opacity: 0"
+            >And nowhere else.</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DUR = 4;
+
+      var inkA = document.getElementById("f01-hook-ink-a");
+      var inkB = document.getElementById("f01-hook-ink-b");
+      var inkC = document.getElementById("f01-hook-ink-c");
+      var inkD = document.getElementById("f01-hook-ink-d");
+      var setup = document.getElementById("f01-hook-setup");
+
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // ——— Scene 1 (0.0–1.5s) — line one mask-ups in, row by row ———
+      // the ink rides up inside its overflow-hidden row; no CSS transform on the
+      // ink itself, so GSAP owns the whole transform string.
+      tl.fromTo(
+        inkA,
+        { yPercent: 115 },
+        { yPercent: 0, duration: 0.85, ease: "expo.out" },
+        0,
+      );
+      tl.fromTo(
+        inkB,
+        { yPercent: 115 },
+        { yPercent: 0, duration: 0.85, ease: "expo.out" },
+        0.42,
+      );
+
+      // ——— Scene 2 (1.5–2.9s) — once the sentence closes, the setup drops to the
+      // back depth layer so "is in the chat." owns the read. ———
+      tl.fromTo(
+        setup,
+        { opacity: 1 },
+        { opacity: 0.52, duration: 0.45, ease: "power2.out" },
+        2.3,
+      );
+
+      // ——— discrete-text-sequence engine: whole-line state swaps at time
+      // thresholds. Scene 2's line and Scene 3's clause arrive by HARD CUT — no
+      // fade, no slide. Authored as a sparse state array, emitted as zero-duration
+      // property writes so the swap is exact under frame-by-frame seeking (a
+      // callback-driven driver is suppressed by GSAP on seek).
+      var STATES = [
+        { t: 0.0, c: 0, d: 0 },
+        { t: 1.5, c: 1, d: 0 },
+        { t: 2.9, c: 1, d: 1 },
+      ];
+
+      for (var i = 0; i < STATES.length; i++) {
+        tl.set(inkC, { opacity: STATES[i].c }, STATES[i].t);
+        tl.set(inkD, { opacity: STATES[i].d }, STATES[i].t);
+      }
+
+      // ——— Scene 3 (2.9–4.0s) — the frame holds dead still: no push, no drift,
+      // no exit. An inert hold keeps the timeline the full frame length. ———
+      tl.to({ hold: 0 }, { hold: 1, duration: DUR - 2.9, ease: "none" }, 2.9);
+
+      window.__timelines["01-hook"] = tl;
+    })();
+  </script>
+</template>

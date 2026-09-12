@@ -1,0 +1,532 @@
+<template>
+  <div
+    id="root"
+    data-composition-id="04-board"
+    data-start="0"
+    data-duration="8"
+    data-width="1920"
+    data-height="1080"
+  >
+    <style>
+      @font-face {
+        font-family: "DM Sans";
+        src: url("capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2");
+        font-weight: 100 1000;
+        font-style: normal;
+        font-display: block;
+      }
+
+      #root,
+      #root * {
+        box-sizing: border-box;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        container-type: size;
+        isolation: isolate;
+        font-family: "DM Sans", sans-serif;
+        --bd-hot: #f5401d;
+        --bd-page: #f1f1f4;
+        --bd-tile: #ffffff;
+        --bd-ink2: #6a6a74;
+      }
+
+      #bd-ground {
+        position: absolute;
+        inset: 0;
+        background: var(--bd-page);
+      }
+
+      #bd-plate {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        display: block;
+      }
+
+      #bd-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      /* --- Scene 1 : the standing label in the board's own empty ground --- */
+
+      #bd-accent-line {
+        position: absolute;
+        left: 676px;
+        top: 758px;
+        width: 60px;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--bd-hot);
+        transform-origin: left center;
+        opacity: 0;
+      }
+
+      #bd-label {
+        position: absolute;
+        left: 676px;
+        top: 784px;
+        font-size: 26px;
+        font-weight: 500;
+        line-height: 1.1;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--bd-ink2);
+        white-space: nowrap;
+        opacity: 0;
+      }
+
+      /* --- Scene 2 : per-column light --- */
+
+      .bd-wash {
+        position: absolute;
+        border-radius: 22px 22px 0 0;
+        background: linear-gradient(
+          180deg,
+          rgba(245, 64, 29, 0.12) 0%,
+          rgba(245, 64, 29, 0.04) 46%,
+          rgba(245, 64, 29, 0) 100%
+        );
+        opacity: 0;
+      }
+
+      .bd-hdrclip {
+        position: absolute;
+        height: 52px;
+        overflow: hidden;
+        border-radius: 22px 22px 0 0;
+      }
+
+      .bd-pill {
+        position: absolute;
+        left: 10px;
+        top: 9px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(245, 64, 29, 0.09);
+        opacity: 0;
+      }
+
+      .bd-sweep {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 240px;
+        height: 52px;
+        background: linear-gradient(
+          90deg,
+          rgba(245, 64, 29, 0) 0%,
+          rgba(245, 64, 29, 0.3) 50%,
+          rgba(245, 64, 29, 0) 100%
+        );
+        opacity: 0;
+      }
+
+      .bd-rule {
+        position: absolute;
+        height: 2px;
+        border-radius: 1px;
+        background: var(--bd-hot);
+        transform-origin: left center;
+        opacity: 0;
+      }
+
+      .bd-countbox {
+        position: absolute;
+        width: 106px;
+        height: 26px;
+        border: 1.5px solid var(--bd-hot);
+        border-radius: 8px;
+        background: rgba(245, 64, 29, 0.07);
+        transform-origin: 50% 50%;
+        opacity: 0;
+      }
+
+      /* --- Scene 3 : the outstanding count + the meeting column --- */
+
+      #bd-stat-ring {
+        position: absolute;
+        left: 652px;
+        top: 22px;
+        width: 301px;
+        height: 164px;
+        border: 2px solid var(--bd-hot);
+        border-radius: 22px;
+        transform-origin: 50% 50%;
+        opacity: 0;
+      }
+
+      #bd-num-patch {
+        position: absolute;
+        left: 660px;
+        top: 56px;
+        width: 230px;
+        height: 66px;
+        background: var(--bd-tile);
+        opacity: 0;
+      }
+
+      #bd-num {
+        position: absolute;
+        left: 675px;
+        top: 70.8px;
+        font-size: 44px;
+        line-height: 44px;
+        font-weight: 600;
+        font-variation-settings: "opsz" 40;
+        letter-spacing: -0.02em;
+        color: var(--bd-hot);
+        transform-origin: 0% 84%;
+        white-space: nowrap;
+        opacity: 0;
+      }
+
+      #bd-meet-wash {
+        position: absolute;
+        left: 1597px;
+        top: 22px;
+        width: 301px;
+        height: 210px;
+        border-radius: 22px 22px 0 0;
+        background: linear-gradient(
+          180deg,
+          rgba(245, 64, 29, 0.13) 0%,
+          rgba(245, 64, 29, 0.04) 48%,
+          rgba(245, 64, 29, 0) 100%
+        );
+        opacity: 0;
+      }
+
+      #bd-meet-ring {
+        position: absolute;
+        left: 1597px;
+        top: 22px;
+        width: 301px;
+        height: 520px;
+        border: 2px solid var(--bd-hot);
+        border-radius: 22px;
+        opacity: 0;
+      }
+
+      #bd-slot-box {
+        position: absolute;
+        left: 1611px;
+        top: 396px;
+        width: 144px;
+        height: 30px;
+        border: 1.5px solid var(--bd-hot);
+        border-radius: 9px;
+        background: rgba(245, 64, 29, 0.1);
+        transform-origin: 50% 50%;
+        opacity: 0;
+      }
+
+      /* --- Scene 4 : the listening pip --- */
+
+      #bd-pip {
+        position: absolute;
+        left: 1306px;
+        top: 127px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--bd-hot);
+        transform-origin: 50% 50%;
+      }
+
+      .bd-ring {
+        position: absolute;
+        left: 1289px;
+        top: 110px;
+        width: 41px;
+        height: 41px;
+        border-radius: 50%;
+        border: 2px solid var(--bd-hot);
+        transform-origin: 50% 50%;
+        opacity: 0;
+      }
+    </style>
+
+    <div
+      id="bd-ground"
+      class="clip"
+      data-start="0"
+      data-duration="8"
+      data-track-index="0"
+    ></div>
+
+    <img
+      id="bd-plate"
+      class="clip"
+      src="assets/scroll-000.png"
+      alt="Overheard board"
+      data-start="0"
+      data-duration="8"
+      data-track-index="1"
+    />
+
+    <div
+      id="bd-overlay"
+      class="clip"
+      data-start="0"
+      data-duration="8"
+      data-track-index="2"
+    >
+      <div id="bd-accent-line"></div>
+      <div id="bd-label">one group, one morning</div>
+
+      <!-- Yasin -->
+      <div class="bd-wash" style="left: 22px; top: 200px; width: 301px; height: 200px"></div>
+      <div class="bd-hdrclip" style="left: 22px; top: 200px; width: 301px">
+        <div class="bd-pill" style="width: 281px"></div>
+        <div class="bd-sweep"></div>
+      </div>
+      <div class="bd-rule" style="left: 42px; top: 250px; width: 261px"></div>
+      <div class="bd-countbox" style="left: 203px; top: 217px"></div>
+
+      <!-- Ata -->
+      <div class="bd-wash" style="left: 22px; top: 733px; width: 616px; height: 157px"></div>
+      <div class="bd-hdrclip" style="left: 22px; top: 733px; width: 616px">
+        <div class="bd-pill" style="width: 596px"></div>
+        <div class="bd-sweep"></div>
+      </div>
+      <div class="bd-rule" style="left: 42px; top: 783px; width: 576px"></div>
+      <div class="bd-countbox" style="left: 518px; top: 750px"></div>
+
+      <!-- Mehmet Cem -->
+      <div class="bd-wash" style="left: 337px; top: 200px; width: 616px; height: 200px"></div>
+      <div class="bd-hdrclip" style="left: 337px; top: 200px; width: 616px">
+        <div class="bd-pill" style="width: 596px"></div>
+        <div class="bd-sweep"></div>
+      </div>
+      <div class="bd-rule" style="left: 357px; top: 250px; width: 576px"></div>
+      <div class="bd-countbox" style="left: 833px; top: 217px"></div>
+
+      <!-- Gokhan -->
+      <div class="bd-wash" style="left: 967px; top: 200px; width: 616px; height: 200px"></div>
+      <div class="bd-hdrclip" style="left: 967px; top: 200px; width: 616px">
+        <div class="bd-pill" style="width: 596px"></div>
+        <div class="bd-sweep"></div>
+      </div>
+      <div class="bd-rule" style="left: 987px; top: 250px; width: 576px"></div>
+      <div class="bd-countbox" style="left: 1463px; top: 217px"></div>
+
+      <!-- Sefa -->
+      <div class="bd-wash" style="left: 1597px; top: 556px; width: 301px; height: 200px"></div>
+      <div class="bd-hdrclip" style="left: 1597px; top: 556px; width: 301px">
+        <div class="bd-pill" style="width: 281px"></div>
+        <div class="bd-sweep"></div>
+      </div>
+      <div class="bd-rule" style="left: 1617px; top: 606px; width: 261px"></div>
+      <div class="bd-countbox" style="left: 1778px; top: 573px"></div>
+
+      <div id="bd-stat-ring"></div>
+      <div id="bd-num-patch"></div>
+      <div id="bd-num">0</div>
+
+      <div id="bd-meet-wash"></div>
+      <div id="bd-meet-ring"></div>
+      <div id="bd-slot-box"></div>
+
+      <div id="bd-ring-a" class="bd-ring"></div>
+      <div id="bd-ring-b" class="bd-ring"></div>
+      <div id="bd-pip"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        window.__timelines = window.__timelines || {};
+        var tl = gsap.timeline({ paused: true });
+        var root = document.currentScript
+          ? document.currentScript.closest("[data-composition-id='04-board']")
+          : null;
+        var scope = root || document;
+        var q = function (sel) {
+          return scope.querySelectorAll(sel);
+        };
+        var one = function (sel) {
+          return scope.querySelector(sel);
+        };
+
+        /* ---------- Scene 1 (0.0-1.8s) : plate holds dead still, the label sets in ---------- */
+        /* The board plate carries Frame 3's end state: x 960 / y 540, scale 1, opacity 1.
+           It is deliberately never tweened — no entrance, no push, no drift. */
+
+        tl.fromTo(
+          "#bd-accent-line",
+          { scaleX: 0, opacity: 1 },
+          { scaleX: 1, opacity: 1, duration: 0.5, ease: "power3.out" },
+          0.35,
+        );
+        tl.fromTo(
+          "#bd-label",
+          { opacity: 0, y: 14 },
+          { opacity: 1, y: 0, duration: 0.62, ease: "power2.out" },
+          0.55,
+        );
+
+        /* ---------- Scene 2 (1.8-3.8s) : the per-person columns light left to right ---------- */
+
+        var washes = q(".bd-wash");
+        var pills = q(".bd-pill");
+        var sweeps = q(".bd-sweep");
+        var rules = q(".bd-rule");
+        var boxes = q(".bd-countbox");
+        var sweepTravel = [341, 656, 656, 656, 341]; /* column width + 40 */
+        var at = [1.85, 2.15, 2.45, 2.75, 3.05];
+
+        for (var i = 0; i < at.length; i += 1) {
+          var t = at[i];
+          tl.fromTo(
+            washes[i],
+            { opacity: 0 },
+            { opacity: 1, duration: 0.55, ease: "power2.out" },
+            t,
+          );
+          tl.fromTo(
+            pills[i],
+            { opacity: 0 },
+            { opacity: 1, duration: 0.32, ease: "power2.out" },
+            t,
+          );
+          tl.fromTo(
+            sweeps[i],
+            { x: -260, opacity: 1 },
+            { x: sweepTravel[i], opacity: 1, duration: 0.62, ease: "power2.inOut" },
+            t,
+          );
+          tl.fromTo(
+            rules[i],
+            { scaleX: 0, opacity: 1 },
+            { scaleX: 1, opacity: 1, duration: 0.46, ease: "power3.out" },
+            t + 0.08,
+          );
+          tl.fromTo(
+            boxes[i],
+            { scale: 0.72, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.44, ease: "power3.out" },
+            t + 0.2,
+          );
+        }
+
+        /* ---------- Scene 3 (3.8-5.6s) : OUTSTANDING re-tallies to 35, meeting column last ---------- */
+
+        tl.fromTo(
+          "#bd-stat-ring",
+          { opacity: 0, scale: 1.05 },
+          { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" },
+          3.6,
+        );
+        tl.fromTo(
+          "#bd-num-patch",
+          { opacity: 0 },
+          { opacity: 1, duration: 0.18, ease: "power1.inOut" },
+          3.62,
+        );
+
+        /* The count itself: a direct innerText tween so every seeked frame renders
+           the right figure without relying on callbacks. Lands on the 35 the real
+           board actually shows. */
+        var numEl = one("#bd-num");
+        tl.fromTo(
+          numEl,
+          { innerText: 0 },
+          {
+            innerText: 35,
+            snap: { innerText: 1 },
+            duration: 1.15,
+            ease: "power2.out",
+          },
+          3.8,
+        );
+        tl.fromTo(
+          numEl,
+          { scale: 0.45, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 1.15, ease: "power2.out" },
+          3.8,
+        );
+
+        tl.fromTo(
+          "#bd-meet-ring",
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" },
+          4.85,
+        );
+        tl.fromTo(
+          "#bd-meet-wash",
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.75, ease: "power3.out" },
+          4.85,
+        );
+        tl.fromTo(
+          "#bd-slot-box",
+          { opacity: 0, scale: 0.62 },
+          { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" },
+          5.15,
+        );
+
+        /* ---------- Scene 4 (5.6-8.0s) : resolved and still; only the LISTENING pip breathes ---------- */
+
+        /* The column light settles back so the real board reads again; the rules,
+           the count brackets and the two rings stay. Not an exit - a resting level. */
+        tl.fromTo(
+          [".bd-wash", ".bd-pill"],
+          { opacity: 1 },
+          {
+            opacity: 0.5,
+            duration: 0.9,
+            ease: "power2.inOut",
+            immediateRender: false,
+          },
+          5.25,
+        );
+
+        var pulses = [5.7, 6.25, 6.8, 7.35];
+        var ringIds = ["#bd-ring-a", "#bd-ring-b"];
+
+        /* Stable resting state so any seek before the first pulse is correct. */
+        tl.set("#bd-pip", { scale: 1 }, 0);
+        tl.set(ringIds, { scale: 0.18, opacity: 0 }, 0);
+
+        for (var p = 0; p < pulses.length; p += 1) {
+          var tp = pulses[p];
+          tl.fromTo(
+            ringIds[p % 2],
+            { scale: 0.18, opacity: 0.8 },
+            {
+              scale: 1,
+              opacity: 0,
+              duration: 0.64,
+              ease: "power2.out",
+              immediateRender: false,
+            },
+            tp,
+          );
+          tl.fromTo(
+            "#bd-pip",
+            { scale: 1 },
+            { scale: 1.5, duration: 0.16, ease: "power2.out", immediateRender: false },
+            tp,
+          );
+          tl.fromTo(
+            "#bd-pip",
+            { scale: 1.5 },
+            { scale: 1, duration: 0.34, ease: "power2.inOut", immediateRender: false },
+            tp + 0.16,
+          );
+        }
+
+        window.__timelines["04-board"] = tl;
+      })();
+    </script>
+  </div>
+</template>

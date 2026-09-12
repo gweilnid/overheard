@@ -1,0 +1,425 @@
+<template>
+  <div
+    id="root"
+    data-composition-id="06-point"
+    data-start="0"
+    data-duration="5.5"
+    data-width="1920"
+    data-height="1080"
+  >
+    <style>
+      @font-face {
+        font-family: "DM Sans";
+        src:
+          url("capture/assets/fonts/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"),
+          url("capture/assets/fonts/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2");
+        font-weight: 100 1000;
+        font-style: normal;
+        font-display: block;
+      }
+
+      #root,
+      #root * {
+        box-sizing: border-box;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        container-type: size;
+        isolation: isolate;
+        font-family: "DM Sans", sans-serif;
+        font-kerning: normal;
+      }
+
+      /* ---------- layer 0 — full-bleed ground (never on #root) ---------- */
+
+      #point-ground {
+        position: absolute;
+        inset: 0;
+        background: #f1f1f4;
+      }
+
+      /* ---------- layer 1 — the Telegram thread, texture only ---------- */
+
+      #point-thread {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        opacity: 0.4;
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          #000 0%,
+          #000 58%,
+          rgba(0, 0, 0, 0.42) 80%,
+          rgba(0, 0, 0, 0) 97%
+        );
+        mask-image: linear-gradient(
+          to bottom,
+          #000 0%,
+          #000 58%,
+          rgba(0, 0, 0, 0.42) 80%,
+          rgba(0, 0, 0, 0) 97%
+        );
+      }
+
+      #point-thread-inner {
+        position: absolute;
+        inset: -56px;
+        filter: blur(9px) saturate(0.9);
+      }
+
+      #point-wallpaper {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.9) 0, transparent 46%),
+          radial-gradient(circle at 82% 74%, rgba(255, 255, 255, 0.72) 0, transparent 44%),
+          linear-gradient(158deg, #e9edf2 0%, #dfe5ec 52%, #d8dfe8 100%);
+      }
+
+      #point-topbar {
+        position: absolute;
+        top: 56px;
+        right: 56px;
+        left: 56px;
+        display: flex;
+        align-items: center;
+        height: 108px;
+        padding: 0 64px;
+        background: #ffffff;
+      }
+
+      #point-topbar-avatar {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: #65aadd;
+      }
+
+      #point-topbar-lines {
+        margin-left: 22px;
+      }
+
+      #point-topbar-lines i {
+        display: block;
+        height: 15px;
+        border-radius: 8px;
+        background: rgba(17, 17, 20, 0.32);
+      }
+
+      #point-topbar-lines i + i {
+        width: 168px;
+        height: 12px;
+        margin-top: 11px;
+        background: rgba(17, 17, 20, 0.18);
+      }
+
+      #point-column {
+        position: absolute;
+        top: 0;
+        left: 476px;
+        width: 1080px;
+        height: 100%;
+      }
+
+      .point-bub {
+        position: absolute;
+        left: 0;
+        padding: 20px 26px 16px;
+        border-radius: 22px 22px 22px 7px;
+        background: #ffffff;
+      }
+
+      .point-bub .point-who {
+        height: 15px;
+        margin-bottom: 14px;
+        border-radius: 8px;
+      }
+
+      .point-bub .point-ln {
+        height: 17px;
+        border-radius: 9px;
+        background: rgba(17, 17, 20, 0.28);
+      }
+
+      .point-bub .point-ln + .point-ln {
+        margin-top: 12px;
+      }
+
+      .point-bub .point-ln.short {
+        background: rgba(17, 17, 20, 0.2);
+      }
+
+      /* the thread's one reaction — the only tally the group ever produced */
+      .point-react {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 16px;
+        padding: 7px 16px 7px 11px;
+        border-radius: 100px;
+        background: rgba(245, 64, 29, 0.14);
+      }
+
+      .point-react b {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #f5401d;
+      }
+
+      .point-react i {
+        width: 13px;
+        height: 15px;
+        margin-left: 10px;
+        border-radius: 4px;
+        background: rgba(245, 64, 29, 0.72);
+      }
+
+      /* ---------- layer 2 — the veil that lifts the type off the texture ---------- */
+
+      #point-veil {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 60% 50% at 50% 41%,
+          rgba(241, 241, 244, 0.78) 0%,
+          rgba(241, 241, 244, 0.34) 56%,
+          rgba(241, 241, 244, 0) 100%
+        );
+      }
+
+      /* ---------- layer 3 — the statement, then the count ---------- */
+
+      #point-stage {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1920px;
+        height: 896px; /* caption keep-out: nothing below 0.83 x 1080 */
+      }
+
+      #point-line {
+        position: absolute;
+        top: 357px;
+        left: 50%;
+        width: 1120px;
+        margin-left: -560px;
+        color: #111114;
+        font-size: 76px;
+        font-weight: 600;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        text-align: center;
+      }
+
+      #point-line span {
+        display: block;
+        white-space: nowrap;
+      }
+
+      #point-mask {
+        position: absolute;
+        top: 253px;
+        left: 50%;
+        width: 1120px;
+        height: 390px;
+        margin-left: -560px;
+        overflow: hidden;
+      }
+
+      #point-pair {
+        display: grid;
+        grid-template-columns: auto auto;
+        align-items: baseline;
+        justify-content: center;
+        column-gap: 34px;
+        row-gap: 20px;
+        padding-top: 4px;
+        font-size: 148px;
+        letter-spacing: -0.02em;
+        line-height: 1.22;
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum" 1;
+      }
+
+      #point-pair .point-num {
+        font-weight: 700;
+        text-align: right;
+      }
+
+      #point-pair .point-word {
+        font-weight: 500;
+        text-align: left;
+      }
+
+      #point-pair .point-reaction {
+        color: #f5401d;
+      }
+
+      #point-pair .point-messages {
+        color: #111114;
+      }
+
+      #point-rule {
+        position: absolute;
+        top: 711px;
+        left: 50%;
+        width: 420px;
+        height: 2px;
+        margin-left: -210px;
+        border-radius: 1px;
+        background: #f5401d;
+        transform-origin: 50% 50%;
+      }
+    </style>
+
+    <!-- 0 — full-bleed ground -->
+    <div
+      id="point-ground"
+      class="clip"
+      data-start="0"
+      data-duration="5.5"
+      data-track-index="0"
+    ></div>
+
+    <!-- 1 — the group, dimmed and blurred past reading: texture, not content -->
+    <div id="point-thread" class="clip" data-start="0" data-duration="5.5" data-track-index="1">
+      <div id="point-thread-inner">
+        <div id="point-wallpaper"></div>
+
+        <div id="point-topbar">
+          <div id="point-topbar-avatar"></div>
+          <div id="point-topbar-lines">
+            <i style="width: 246px"></i>
+            <i></i>
+          </div>
+        </div>
+
+        <div id="point-column">
+          <div class="point-bub" style="top: -34px; width: 548px">
+            <div class="point-who" style="width: 138px; background: #65aadd"></div>
+            <div class="point-ln" style="width: 100%"></div>
+            <div class="point-ln" style="width: 86%"></div>
+            <div class="point-ln short" style="width: 42%"></div>
+          </div>
+
+          <div class="point-bub" style="top: 152px; width: 424px">
+            <div class="point-who" style="width: 104px; background: #e17076"></div>
+            <div class="point-ln" style="width: 100%"></div>
+            <div class="point-ln short" style="width: 58%"></div>
+          </div>
+
+          <div class="point-bub" style="top: 296px; width: 664px">
+            <div class="point-who" style="width: 176px; background: #a695e7"></div>
+            <div class="point-ln" style="width: 100%"></div>
+            <div class="point-ln" style="width: 93%"></div>
+            <div class="point-ln short" style="width: 61%"></div>
+            <div class="point-react"><b></b><i></i></div>
+          </div>
+
+          <div class="point-bub" style="top: 544px; width: 372px">
+            <div class="point-who" style="width: 122px; background: #7bc862"></div>
+            <div class="point-ln short" style="width: 74%"></div>
+          </div>
+
+          <div class="point-bub" style="top: 652px; width: 604px">
+            <div class="point-who" style="width: 150px; background: #65aadd"></div>
+            <div class="point-ln" style="width: 100%"></div>
+            <div class="point-ln short" style="width: 49%"></div>
+          </div>
+
+          <div class="point-bub" style="top: 796px; width: 486px">
+            <div class="point-who" style="width: 112px; background: #ee7aae"></div>
+            <div class="point-ln" style="width: 96%"></div>
+            <div class="point-ln short" style="width: 66%"></div>
+          </div>
+
+          <div class="point-bub" style="top: 940px; width: 702px">
+            <div class="point-who" style="width: 164px; background: #6ec9cb"></div>
+            <div class="point-ln" style="width: 100%"></div>
+            <div class="point-ln" style="width: 88%"></div>
+            <div class="point-ln short" style="width: 53%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 — veil -->
+    <div id="point-veil" class="clip" data-start="0" data-duration="5.5" data-track-index="2"></div>
+
+    <!-- 3 — statement, then the count -->
+    <div id="point-stage" class="clip" data-start="0" data-duration="5.5" data-track-index="3">
+      <div id="point-line">
+        <span>Overheard sat in that</span>
+        <span>group all morning.</span>
+      </div>
+
+      <div id="point-mask">
+        <div id="point-pair">
+          <div class="point-num point-reaction">1</div>
+          <div class="point-word point-reaction">reaction</div>
+          <div class="point-num point-messages">0</div>
+          <div class="point-word point-messages">messages</div>
+        </div>
+      </div>
+
+      <div id="point-rule"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        window.__timelines = window.__timelines || {};
+
+        var tl = gsap.timeline({ paused: true });
+
+        /* Scene 1 (0.0-1.6s) — the group returns as texture; the statement focuses in.
+           No drift, no push: opacity and focus only. */
+        tl.fromTo(
+          "#point-thread",
+          { opacity: 0.32 },
+          { opacity: 0.4, duration: 1, ease: "sine.out" },
+          0,
+        );
+
+        tl.fromTo(
+          "#point-line",
+          { opacity: 0, filter: "blur(7px)" },
+          { opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "power2.out" },
+          0,
+        );
+
+        /* Scene 2 (1.6-3.2s) — the line clears and the counter pair sets in its place.
+           One mask-up carries both numerals together: no count-up, no stagger. */
+        tl.to(
+          "#point-line",
+          { opacity: 0, filter: "blur(8px)", duration: 0.4, ease: "power2.in" },
+          1.58,
+        );
+
+        tl.fromTo(
+          "#point-pair",
+          { yPercent: 100 },
+          { yPercent: 0, duration: 0.72, ease: "power3.out" },
+          1.98,
+        );
+
+        /* Scene 3 (3.2-5.0s) — one hairline rule draws beneath the pair, then stops.
+           Nothing else moves for the rest of the frame. */
+        tl.fromTo(
+          "#point-rule",
+          { scaleX: 0 },
+          { scaleX: 1, duration: 0.85, ease: "power2.out" },
+          3.28,
+        );
+
+        window.__timelines["06-point"] = tl;
+      })();
+    </script>
+  </div>
+</template>
