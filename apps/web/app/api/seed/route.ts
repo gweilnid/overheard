@@ -14,13 +14,24 @@ import { store } from '@/lib/store'
 import board from '@/fixtures/board.json'
 
 export async function POST() {
-  store.people = board.people as Person[]
-  store.commitments = board.commitments as Commitment[]
+  // Merge, never replace. The run sheet says to seed right before going on, and
+  // replacing the array deletes every card the group has already earned — we lost
+  // a real one that way. Anything not from the fixture survives.
+  const seeded = board.commitments as Commitment[]
+  const seededIds = new Set(seeded.map(c => c.id))
+  const live = store.commitments.filter(c => !seededIds.has(c.id))
+  store.commitments = [...seeded, ...live]
+
+  const known = new Set(store.people.map(p => p.id))
+  store.people = [...(board.people as Person[]), ...store.people.filter(p => !known.has(p.id) || false)]
+  const seen = new Set<string>()
+  store.people = store.people.filter(p => (seen.has(p.id) ? false : (seen.add(p.id), true)))
 
   return NextResponse.json({
     ok: true,
     people: store.people.length,
     commitments: store.commitments.length,
+    kept: live.length,
     open: store.commitments.filter(c => c.status === 'open').length,
     messages: store.messages.length,
   })

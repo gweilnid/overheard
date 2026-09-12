@@ -49,6 +49,18 @@ function isRepeat(c: Diff['create'][number], existing: Commitment[]): boolean {
   return existing.some(e => e.sourceMessageId === c.sourceMessageId && source.text.includes(e.quote))
 }
 
+// Seeded cards are c001, c002... A crypto.randomUUID() alongside them is the odd
+// one out, and when the model is asked to update "the release" it reaches for a
+// short familiar-looking id instead — we watched it target c001 by mistake.
+// Same format for everything removes the tell.
+function nextId(): string {
+  const n = store.commitments.reduce((max, c) => {
+    const m = /^c(\d+)$/.exec(c.id)
+    return m ? Math.max(max, Number(m[1])) : max
+  }, 0)
+  return `c${String(n + 1).padStart(3, '0')}`
+}
+
 export function applyDiff(diff: Diff): number[] {
   const reactTo: number[] = []
   // Snapshot, so two promises in one new message (same diff) are both kept.
@@ -58,7 +70,7 @@ export function applyDiff(diff: Diff): number[] {
     // A quiet agent that sometimes stays silent beats a chatty one that is wrong.
     if (c.confidence < CONFIDENCE_THRESHOLD) continue
     if (isRepeat(c, existing)) continue
-    store.commitments.push({ ...c, id: crypto.randomUUID(), status: 'open' })
+    store.commitments.push({ ...c, id: nextId(), status: 'open' })
     reactTo.push(c.sourceMessageId)
   }
   for (const u of diff.update) {
