@@ -315,6 +315,18 @@ Every file you own has a `TODO SEAT n` marker in it saying what to replace.
   message ingested. When a message does not become a card, look here first — it
   tells you whether it was even received.
 
+## Before the demo: real Telegram ids in the fixture
+
+The seed is the on-stage safety net, so it uses the real team. But `/me` matches
+on Telegram user id, not name — a fixture id that is not someone's real id means
+their digest comes back empty in front of the judges.
+
+1. Everyone sends one message in the group
+2. `npm run roster -w @overheard/web`
+
+It reads the live store and rewrites every `TODO-<NAME>` in `fixtures/demo.json`
+with the real id, then tells you which are still missing.
+
 ## Rules for the next 2.5 hours
 
 1. **Stay in your own files.** The contract above is the only shared surface.
