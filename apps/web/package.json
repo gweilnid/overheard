@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "eval": "node --conditions=react-server --import tsx scripts/eval.ts",
+    "eval": "node --conditions=react-server --import tsx scripts/eval.mts",
     "test": "node --conditions=react-server --import tsx --test lib/extract.test.ts",
     "typecheck": "tsc --noEmit --incremental false"
   },
