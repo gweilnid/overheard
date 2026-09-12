@@ -138,22 +138,15 @@ export default function Board() {
       <style>{`
         /* Design system: ui-ux-pro-max — Flat Design for a realtime team board.
            No gradients, no shadows; structure comes from borders and spacing. */
+        /* Committed to a single light world: this goes on a projector in a lit room,
+           and a board people glance at should not depend on the viewer's OS theme.
+           Bone ground, ink with a green bias, one pine accent. Status is carried by
+           the label and the strike, never by colour alone. */
         :root {
-          --bg:#f8fafc; --card:#ffffff; --fg:#0f172a; --muted:#f1f5fd; --muted-fg:#475569;
-          --border:#e4ecfc; --border-strong:#cfdcf5;
-          --primary:#2563eb; --accent:#059669; --destructive:#dc2626; --ring:#2563eb;
-        }
-        @media (prefers-color-scheme: dark) {
-          :root:not([data-theme="light"]) {
-            --bg:#0b1220; --card:#111a2b; --fg:#eaf0fb; --muted:#16223a; --muted-fg:#9bacc9;
-            --border:#1f2c45; --border-strong:#2b3b59;
-            --primary:#6ea0ff; --accent:#34d39c; --destructive:#f87171; --ring:#6ea0ff;
-          }
-        }
-        :root[data-theme="dark"] {
-          --bg:#0b1220; --card:#111a2b; --fg:#eaf0fb; --muted:#16223a; --muted-fg:#9bacc9;
-          --border:#1f2c45; --border-strong:#2b3b59;
-          --primary:#6ea0ff; --accent:#34d39c; --destructive:#f87171; --ring:#6ea0ff;
+          color-scheme: light;
+          --bg:#f0efe9; --card:#fbfaf7; --fg:#191c18; --muted:#e7e6dd; --muted-fg:#5f635b;
+          --border:#dedcd2; --border-strong:#c6c4b8;
+          --pine:#1d6b53; --pine-soft:#3f8a72; --quiet:#8a8e84; --ring:#1d6b53;
         }
 
         * { box-sizing:border-box; }
@@ -176,10 +169,10 @@ export default function Board() {
                  font-variant-numeric:tabular-nums; }
         .kpi span { font-size:11px; letter-spacing:.06em; text-transform:uppercase;
                     color:var(--muted-fg); }
-        .kpi.open b { color:var(--primary); }
-        .kpi.settled b { color:var(--accent); }
+        .kpi.open b { color:var(--pine); }
+        .kpi.settled b { color:var(--quiet); }
         .kpi.feed b { display:flex; align-items:center; gap:7px; }
-        .pulse { width:8px; height:8px; border-radius:50%; background:var(--accent); flex:none; }
+        .pulse { width:8px; height:8px; border-radius:50%; background:var(--pine); flex:none; }
         .pulse.off { background:var(--muted-fg); }
 
         /* board -------------------------------------------------------------- */
@@ -190,7 +183,7 @@ export default function Board() {
         .colhead h2 { font-size:15px; font-weight:600; margin:0; letter-spacing:.01em; }
         .colhead .n { margin-left:auto; font-family:"Fira Code",monospace; font-size:12px;
                       color:var(--muted-fg); font-variant-numeric:tabular-nums; }
-        .colhead svg { color:var(--primary); flex:none; }
+        .colhead svg { color:var(--pine); flex:none; }
         .ini { width:24px; height:24px; border-radius:6px; background:var(--muted);
                border:1px solid var(--border); display:grid; place-items:center; flex:none;
                font-family:"Fira Code",monospace; font-size:10px; font-weight:600;
@@ -209,15 +202,15 @@ export default function Board() {
         .chip { font-family:"Fira Code",monospace; font-size:11px; line-height:1.6;
                 padding:2px 8px; border-radius:5px; border:1px solid var(--border);
                 background:var(--muted); color:var(--muted-fg); white-space:nowrap; }
-        .chip.due  { border-color:var(--primary); color:var(--primary); background:transparent; }
-        .chip.ok   { border-color:var(--accent);  color:var(--accent);  background:transparent; }
-        .chip.time { border-color:var(--primary); color:var(--primary); background:transparent; }
+        .chip.due  { border-color:#bcd8cd; color:var(--pine); background:#e6f1ec; }
+        .chip.ok   { border-color:var(--border-strong); color:var(--quiet); background:transparent; }
+        .chip.time { border-color:#bcd8cd; color:var(--pine); background:#e6f1ec; }
         .said { margin-top:10px; font-size:14px; line-height:1.5; color:var(--muted-fg); }
 
         .blank { padding:72px 32px; max-width:52ch; }
         .blank h2 { font-size:19px; margin:0 0 8px; font-weight:600; }
         .blank p { margin:0; color:var(--muted-fg); }
-        .blank code { font-family:"Fira Code",monospace; font-size:13.5px; color:var(--primary);
+        .blank code { font-family:"Fira Code",monospace; font-size:13.5px; color:var(--pine);
                       background:var(--muted); border:1px solid var(--border);
                       padding:2px 7px; border-radius:5px; }
 
