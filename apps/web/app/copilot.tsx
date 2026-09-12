@@ -15,7 +15,10 @@ const runtimeUrl =
 
 export default function Copilot({ children }: { children: React.ReactNode }) {
   return (
-    <CopilotKit runtimeUrl={runtimeUrl}>
+    // showDevConsole={false}: CopilotKit otherwise injects its own product
+    // announcements over the page ("The Channels SDK is live..."). Fine in
+    // development, unacceptable on a projector in front of judges.
+    <CopilotKit runtimeUrl={runtimeUrl} showDevConsole={false}>
       <CopilotSidebar
         labels={{
           title: 'Ask about the group',

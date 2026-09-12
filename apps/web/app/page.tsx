@@ -119,50 +119,61 @@ export default function Board() {
   const withCommitments = people.filter(p => promises.some(c => c.ownerId === p.id))
   const anything = meetings.length || promises.length
 
-  // Tile span encodes volume: whoever is carrying the most gets the most room.
-  // The threshold sits above the median on purpose — if every tile is wide, the
-  // grid is just two ragged columns with a dead strip down the right.
+  // Fixed row units, so every tile lands on the same baseline and the grid reads
+  // as a grid. Width still encodes volume; height never does.
+  const SHOWN = 4
   const spanFor = (n: number) => (n >= 9 ? 'span 2' : 'span 1')
 
+  // Outstanding first, newest first within that — a freshly overheard promise
+  // appears at the top of its tile rather than below the fold.
+  const order = (list: Commitment[]) =>
+    [...list].reverse().sort((a, b) =>
+      a.status === b.status ? 0 : a.status === 'open' ? -1 : 1)
+
   const Tile = ({
-    label, count, unit, span, accent, children,
+    label, count, unit, span, accent, items,
   }: {
     label: string; count: number; unit: string; span: string
-    accent?: boolean; children: React.ReactNode
-  }) => (
-    <section className="tile" style={{ gridColumn: span }}>
-      <header className="tilehead">
-        <h2 className={accent ? 'accent' : undefined}>{label}</h2>
-        <span className="n">{count} {unit}</span>
-      </header>
-      <div className="rows">{children}</div>
-    </section>
-  )
-
-  const Row = ({ c }: { c: Commitment }) => (
-    <article className={c.status === 'done' ? 'row done' : 'row'}>
-      <p className="what">{c.what}</p>
-      <div className="tags">
-        {c.kind === 'meeting' && c.when && <span className="tag hot">{c.when}</span>}
-        {c.kind !== 'meeting' && c.due && <span className="tag hot">{c.due}</span>}
-        {c.toWhom && <span className="tag">→ {c.toWhom}</span>}
-        {c.status === 'done' && <span className="tag muted">settled</span>}
-      </div>
-      <p className="said">{c.quote}</p>
-    </article>
-  )
+    accent?: boolean; items: Commitment[]
+  }) => {
+    const shown = order(items).slice(0, SHOWN)
+    const rest = items.length - shown.length
+    return (
+      <section className="tile" style={{ gridColumn: span }}>
+        <header className="tilehead">
+          <h2 className={accent ? 'accent' : undefined}>{label}</h2>
+          <span className="n">{count} {unit}</span>
+        </header>
+        <div className="rows">
+          {shown.map(c => (
+            <article className={c.status === 'done' ? 'row done' : 'row'} key={c.id}>
+              <p className="what">{c.what}</p>
+              <div className="tags">
+                {c.kind === 'meeting' && c.when && <span className="tag hot">{c.when}</span>}
+                {c.kind !== 'meeting' && c.due && <span className="tag hot">{c.due}</span>}
+                {c.toWhom && <span className="tag">→ {c.toWhom}</span>}
+                {c.status === 'done' && <span className="tag muted">settled</span>}
+              </div>
+              <p className="said">{c.quote}</p>
+            </article>
+          ))}
+        </div>
+        {rest > 0 && <footer className="more">+{rest} more</footer>}
+      </section>
+    )
+  }
 
   return (
     <main>
       <style>{`
-        /* Bento Box Grid (ui-ux-pro-max #39): modular tiles, asymmetric spans,
-           generous radius, soft shadows, neutral ground with one accent.
-           Monochrome apart from a single vermilion — kept for what is owed now. */
+        /* Bento Box Grid (ui-ux-pro-max #39). Fixed row units keep every tile on the
+           same baseline; content that does not fit discloses as "+n more" rather than
+           stretching its tile and leaving the grid ragged. */
         :root {
           color-scheme: light;
           --page:#f1f1f4; --tile:#ffffff; --ink:#111114; --ink2:#6a6a74; --ink3:#a2a2ac;
           --hair:#ebebf0; --hot:#f5401d; --hot-bg:#fff0ec;
-          --r:22px; --gap:14px;
+          --r:22px; --gap:14px; --unit:164px;
           --lift:0 1px 2px rgba(17,17,20,.05), 0 10px 28px -12px rgba(17,17,20,.14);
         }
         * { box-sizing:border-box; }
@@ -171,21 +182,20 @@ export default function Board() {
                font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif;
                padding:22px 22px 70px; font-size:15px; }
 
-        /* dense lets a narrow tile backfill the hole a wide one leaves at a row end */
-        .grid { display:grid; gap:var(--gap); grid-auto-flow:dense; align-items:start;
-                grid-template-columns:repeat(auto-fill,minmax(272px,1fr)); }
+        .grid { display:grid; gap:var(--gap); grid-auto-flow:dense;
+                grid-template-columns:repeat(auto-fill,minmax(272px,1fr));
+                grid-auto-rows:var(--unit); }
 
-        /* masthead + figures occupy the first row of the same grid */
-        .brand { grid-column:span 2; background:var(--ink); color:var(--tile);
+        .brand { grid-column:span 2; grid-row:span 1; background:var(--ink); color:var(--tile);
                  border-radius:var(--r); padding:24px 26px; display:flex;
-                 flex-direction:column; justify-content:space-between; min-height:132px; }
-        .brand h1 { font-size:31px; font-weight:700; letter-spacing:-.035em; margin:0; }
-        .brand p { margin:10px 0 0; font-size:14.5px; line-height:1.45; color:#a9a9b4; max-width:34ch; }
+                 flex-direction:column; justify-content:center; gap:10px; overflow:hidden; }
+        .brand h1 { font-size:30px; font-weight:700; letter-spacing:-.035em; margin:0; }
+        .brand p { margin:0; font-size:14px; line-height:1.45; color:#a9a9b4; max-width:36ch; }
 
-        .fig { background:var(--tile); border-radius:var(--r); padding:22px 24px;
-               min-height:132px; display:flex; flex-direction:column; justify-content:space-between;
-               box-shadow:var(--lift); }
-        .fig b { font-size:46px; font-weight:700; letter-spacing:-.045em; line-height:1;
+        .fig { grid-row:span 1; background:var(--tile); border-radius:var(--r);
+               padding:22px 24px; display:flex; flex-direction:column;
+               justify-content:center; gap:8px; box-shadow:var(--lift); overflow:hidden; }
+        .fig b { font-size:44px; font-weight:700; letter-spacing:-.045em; line-height:1;
                  font-variant-numeric:tabular-nums; }
         .fig.now b { color:var(--hot); }
         .fig span { font-family:"DM Mono",ui-monospace,monospace; font-size:11px;
@@ -194,31 +204,41 @@ export default function Board() {
         .pip { width:7px; height:7px; border-radius:50%; background:var(--hot); }
         .pip.off { background:var(--ink3); }
 
-        .tile { background:var(--tile); border-radius:var(--r); padding:18px 20px 6px;
-                box-shadow:var(--lift); }
+        /* every content tile is exactly three units tall */
+        .tile { grid-row:span 3; background:var(--tile); border-radius:var(--r);
+                padding:18px 20px 0; box-shadow:var(--lift);
+                display:flex; flex-direction:column; overflow:hidden; }
         .tilehead { display:flex; align-items:baseline; justify-content:space-between;
-                    gap:12px; padding-bottom:13px; }
+                    gap:12px; padding-bottom:12px; flex:none; }
         .tilehead h2 { font-size:16.5px; font-weight:600; margin:0; letter-spacing:-.015em; }
         .tilehead h2.accent { color:var(--hot); }
         .tilehead .n { font-family:"DM Mono",monospace; font-size:11px; color:var(--ink3);
                        letter-spacing:.05em; white-space:nowrap; }
 
-        .rows { display:flex; flex-direction:column; }
-        .row { padding:13px 0; border-top:1px solid var(--hair); }
-        .what { font-size:16px; font-weight:500; line-height:1.32; margin:0;
-                letter-spacing:-.01em; text-wrap:pretty; }
-        .tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+        .rows { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
+        .row { padding:12px 0; border-top:1px solid var(--hair); }
+        .what { font-size:15.5px; font-weight:500; line-height:1.3; margin:0;
+                letter-spacing:-.01em; text-wrap:pretty;
+                display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+                overflow:hidden; }
+        .tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:7px; }
         .tag { font-family:"DM Mono",monospace; font-size:10.5px; letter-spacing:.03em;
-               padding:3px 7px; border-radius:6px; background:#f4f4f7; color:var(--ink2); }
+               padding:3px 7px; border-radius:6px; background:#f4f4f7; color:var(--ink2);
+               white-space:nowrap; }
         .tag.hot { background:var(--hot-bg); color:var(--hot); }
         .tag.muted { background:transparent; color:var(--ink3); padding-left:0; }
-        .said { margin:9px 0 0; font-size:13.5px; line-height:1.45; color:var(--ink3); }
-
+        .said { margin:7px 0 0; font-size:13px; line-height:1.4; color:var(--ink3);
+                display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical;
+                overflow:hidden; }
         .row.done .what { color:var(--ink3); text-decoration:line-through; }
-        .row.done .said { opacity:.65; }
 
-        .blank { grid-column:1/-1; background:var(--tile); border-radius:var(--r);
-                 padding:52px 34px; box-shadow:var(--lift); }
+        .more { flex:none; padding:11px 0 14px; border-top:1px solid var(--hair);
+                font-family:"DM Mono",monospace; font-size:11px; color:var(--ink3);
+                letter-spacing:.05em; }
+
+        .blank { grid-column:1/-1; grid-row:span 2; background:var(--tile);
+                 border-radius:var(--r); padding:44px 34px; box-shadow:var(--lift);
+                 display:flex; flex-direction:column; justify-content:center; }
         .blank h2 { margin:0 0 8px; font-size:20px; font-weight:600; letter-spacing:-.02em; }
         .blank p { margin:0; color:var(--ink2); max-width:50ch; }
         .blank code { font-family:"DM Mono",monospace; font-size:13px; color:var(--hot);
@@ -231,8 +251,8 @@ export default function Board() {
         }
         @media (max-width:720px) {
           main { padding:14px 14px 56px; }
-          .brand { grid-column:1/-1; min-height:0; } .fig { min-height:0; }
-          .fig b { font-size:36px; }
+          :root { --unit:150px; }
+          .brand { grid-column:1/-1; } .fig b { font-size:36px; }
         }
       `}</style>
 
@@ -256,27 +276,21 @@ export default function Board() {
         ) : (
           <>
             {meetings.length > 0 && (
-              <Tile label="Meetings" count={meetings.filter(c => c.status === 'open').length}
-                    unit="agreed" span={spanFor(meetings.length)} accent>
-                {meetings.map(c => <Row c={c} key={c.id} />)}
-              </Tile>
+              <Tile label="Meetings" unit="agreed" accent items={meetings}
+                    count={meetings.filter(c => c.status === 'open').length}
+                    span={spanFor(meetings.length)} />
             )}
-
             {withCommitments.map(p => {
               const mine = promises.filter(c => c.ownerId === p.id)
               return (
-                <Tile key={p.id} label={p.name} unit="outstanding"
+                <Tile key={p.id} label={p.name} unit="outstanding" items={mine}
                       count={mine.filter(c => c.status === 'open').length}
-                      span={spanFor(mine.length)}>
-                  {mine.map(c => <Row c={c} key={c.id} />)}
-                </Tile>
+                      span={spanFor(mine.length)} />
               )
             })}
-
             {orphans.length > 0 && (
-              <Tile label="Unassigned" count={orphans.length} unit="open" span={spanFor(orphans.length)}>
-                {orphans.map(c => <Row c={c} key={c.id} />)}
-              </Tile>
+              <Tile label="Unassigned" unit="open" items={orphans}
+                    count={orphans.length} span={spanFor(orphans.length)} />
             )}
           </>
         )}
