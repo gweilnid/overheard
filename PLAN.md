@@ -98,6 +98,18 @@ export type Diff = {
 | `POST /api/ingest` | `IngestMessage` | `{ reactTo: number[] }` |
 | `GET /api/commitments` | — | `{ commitments: Commitment[], people: Person[] }` |
 | `POST /api/close` | `{ id: string }` | `{ ok: true }` |
+| `POST /api/seed` | — | refills the board from `fixtures/demo.json` |
+
+`GET /api/commitments` serves the real store as soon as it has anything in it,
+and falls back to fake data while it is empty — so Seat 4 is never blocked.
+
+**`POST /api/seed` is the demo safety net.** The store is in memory, so a Next.js
+restart empties the board. One curl refills it instead of replaying the whole
+conversation in Telegram. Learn this reflex now, not at T+2:25:
+
+```bash
+curl -X POST localhost:3000/api/seed
+```
 
 ### The extractor
 

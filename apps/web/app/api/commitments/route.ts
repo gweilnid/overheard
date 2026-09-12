@@ -1,7 +1,9 @@
-// SEAT 3 owns this file. Returns FAKE DATA until the store is wired —
-// seat 4 builds the board against this shape right now.
+// SEAT 3 owns this file.
+// Serves the real store once it has anything in it, and falls back to fake data
+// while it is empty — so Seat 4 can build the board before ingest works.
 import { NextResponse } from 'next/server'
 import type { Commitment, Person } from '@overheard/types'
+import { store } from '@/lib/store'
 
 const FAKE_PEOPLE: Person[] = [
   { id: '1', name: 'Petr' },
@@ -19,7 +21,7 @@ const FAKE_COMMITMENTS: Commitment[] = [
   },
   {
     id: 'c2', ownerId: '2', ownerName: 'Jana',
-    what: 'put the deck in front of the client', toWhom: 'Petr',
+    what: 'walk the client through the deck', toWhom: 'Petr',
     due: 'Thursday', status: 'done',
     quote: 'I can take it to them Thursday',
     sourceMessageId: 88, confidence: 0.84,
@@ -27,6 +29,9 @@ const FAKE_COMMITMENTS: Commitment[] = [
 ]
 
 export async function GET() {
-  // TODO SEAT 3: swap for the real store.
-  return NextResponse.json({ commitments: FAKE_COMMITMENTS, people: FAKE_PEOPLE })
+  const isEmpty = store.commitments.length === 0 && store.people.length === 0
+  if (isEmpty) {
+    return NextResponse.json({ commitments: FAKE_COMMITMENTS, people: FAKE_PEOPLE })
+  }
+  return NextResponse.json({ commitments: store.commitments, people: store.people })
 }
