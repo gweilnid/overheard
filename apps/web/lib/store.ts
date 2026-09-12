@@ -12,7 +12,6 @@ type Store = {
   messages: IngestMessage[]
   people: Person[]
   commitments: Commitment[]
-  reacted: Set<number>          // message ids we have already put a ✅ on
 }
 
 type Runtime = {
@@ -25,7 +24,7 @@ type Runtime = {
 const g = globalThis as unknown as { __overheard?: Store; __overheardRt?: Runtime }
 
 export const store: Store = (g.__overheard ??= {
-  messages: [], people: [], commitments: [], reacted: new Set(),
+  messages: [], people: [], commitments: [],
 })
 
 const rt: Runtime = (g.__overheardRt ??= {
@@ -96,7 +95,12 @@ async function runExtraction() {
       open: store.commitments.filter(c => c.status === 'open'),
       roster: store.people,
     })
-    resolve(applyDiff(diff))
+    // Seeing the raw diff is the difference between "it did nothing" and
+    // "it wanted to do something and we filtered it out".
+    console.log('[extract] diff:', JSON.stringify(diff))
+    const ids = applyDiff(diff)
+    console.log('[extract] reactTo:', ids)
+    resolve(ids)
   } catch (err) {
     // extract() rejects the WHOLE diff on any validation failure. On stage a
     // silent miss is survivable; a 500 back to the bot is not.
@@ -107,9 +111,7 @@ async function runExtraction() {
   }
 }
 
-/** Claim reaction ids so a burst of ingest calls does not re-react to the same message. */
-export function claimReactions(ids: number[]): number[] {
-  const fresh = ids.filter(id => !store.reacted.has(id))
-  for (const id of fresh) store.reacted.add(id)
-  return fresh
-}
+// Deduplicating marks lives in the BOT, not here. Claiming an id on this side
+// marks it done before anyone knows the reaction landed — when it fails, the
+// message is silently never marked again. Re-setting an identical reaction is a
+// harmless no-op in Telegram, so returning ids more than once costs nothing.

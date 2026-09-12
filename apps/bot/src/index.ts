@@ -10,6 +10,10 @@ const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN!)
 // ✍️ ("wrote that down") and 🫡 ("noted") both work and suit the product better.
 const MARK = '✍️'
 
+// Only ever records a mark that actually landed, so a failed reaction is retried
+// on the next window instead of being lost forever.
+const marked = new Set<number>()
+
 bot.on('message:text', async ctx => {
   // Private chats are the DM digest, not group ingest.
   if (ctx.chat.type === 'private') return
@@ -38,8 +42,10 @@ bot.on('message:text', async ctx => {
   }
 
   for (const id of reactTo) {
+    if (marked.has(id)) continue
     try {
       await ctx.api.setMessageReaction(ctx.chat.id, id, [{ type: 'emoji', emoji: MARK }])
+      marked.add(id)
       console.log(`[react] ${MARK} on ${id}`)
     } catch (err) {
       // A failed reaction must never take the bot down mid-demo.
